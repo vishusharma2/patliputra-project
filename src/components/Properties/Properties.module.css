@@ -114,6 +114,26 @@
   padding: var(--space-6);
 }
 
+.sectionTitle {
+  font-family: var(--font-heading);
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--color-secondary);
+  letter-spacing: 2px;
+  margin-bottom: var(--space-4);
+}
+
+.goldText {
+  color: var(--color-primary);
+}
+
+.typeRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+
 .cardType {
   font-family: var(--font-display);
   font-size: var(--text-xs);
@@ -121,15 +141,35 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--color-primary);
-  margin-bottom: var(--space-2);
+}
+
+.reraNumber {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.5px;
 }
 
 .cardTitle {
   font-family: var(--font-heading);
   font-size: var(--text-xl);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-text);
+  margin-bottom: var(--space-1);
+}
+
+.cardLocation {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
   margin-bottom: var(--space-4);
+}
+
+.cardLocation svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
 .cardMeta {

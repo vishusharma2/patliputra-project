@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://patliputraresidences.com"),
   title: "Patliputra Residences | Premium Luxury Living in Patna",
   description:
     "Discover Patliputra Residences — Patna's most prestigious luxury residential project. Premium 2, 3 & 4 BHK apartments with world-class amenities, landscaped gardens, and modern architecture. Book your dream home today.",
