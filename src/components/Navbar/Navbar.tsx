@@ -50,61 +50,6 @@ export default function Navbar() {
       className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}
       role="banner"
     >
-      {/* Top Utility Bar */}
-      <div className={styles.topBar}>
-        <div className={styles.topContainer}>
-          <div className={styles.topInfo}>
-            <span>
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              Patliputra Colony &amp; Bailey Road, Patna
-            </span>
-            <span className={styles.topDivider}>|</span>
-            <span>
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
-              </svg>
-              info@patliputragroup.com
-            </span>
-            <span className={styles.topDivider}>|</span>
-            <span className={styles.topRera}>
-              Bihar RERA Registered: BRERAP00234-1/2023
-            </span>
-          </div>
-
-          <div className={styles.topSocials}>
-            <a href="#" aria-label="Facebook">
-              FB
-            </a>
-            <a href="#" aria-label="Instagram">
-              IG
-            </a>
-            <a href="#" aria-label="LinkedIn">
-              IN
-            </a>
-            <a href="#" aria-label="YouTube">
-              YT
-            </a>
-          </div>
-        </div>
-      </div>
 
       {/* Main Navbar */}
       <nav className={styles.nav} aria-label="Main navigation">

@@ -7,73 +7,6 @@
   transition: all var(--transition-base);
 }
 
-/* Top Utility Bar */
-.topBar {
-  background: rgba(15, 15, 26, 0.95);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.72rem;
-  color: var(--color-text-light);
-  padding: 6px 0;
-  transition: all var(--transition-base);
-}
-
-.header.scrolled .topBar {
-  display: none;
-}
-
-.topContainer {
-  max-width: var(--container-max);
-  margin: 0 auto;
-  padding: 0 var(--space-6);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.topInfo {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-family: var(--font-display);
-}
-
-.topInfo span {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.topInfo svg {
-  color: var(--color-primary);
-}
-
-.topDivider {
-  color: rgba(255, 255, 255, 0.2);
-}
-
-.topRera {
-  color: var(--color-primary-light);
-  font-weight: 600;
-}
-
-.topSocials {
-  display: flex;
-  gap: var(--space-3);
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 0.68rem;
-  letter-spacing: 1px;
-}
-
-.topSocials a {
-  color: var(--color-text-light);
-  transition: color var(--transition-fast);
-}
-
-.topSocials a:hover {
-  color: var(--color-primary);
-}
-
 /* Main Nav */
 .header.scrolled .nav {
   background: rgba(15, 15, 26, 0.96);
@@ -153,7 +86,7 @@
 }
 
 .link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -192,7 +125,11 @@
   font-weight: 600;
   color: var(--color-white);
   padding: 6px 14px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-dark)
+  );
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-gold);
   transition: all var(--transition-base);

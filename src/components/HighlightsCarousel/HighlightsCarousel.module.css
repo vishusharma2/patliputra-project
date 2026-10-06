@@ -1,0 +1,291 @@
+.carousel {
+  position: relative;
+  margin-bottom: 0;
+}
+
+/* ---------- Track ---------- */
+.track {
+  --per-view: 4;
+  --gap: 1.25rem;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc(
+    (100% - (var(--per-view) - 1) * var(--gap)) / var(--per-view)
+  );
+  column-gap: var(--gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding: 0.5rem 0 1rem;
+  outline: none;
+  /* Soft fade on the edges */
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 1.5%,
+    #000 98.5%,
+    transparent 100%
+  );
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.track:focus-visible {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 4px;
+  border-radius: var(--radius-md);
+}
+
+/* ---------- Card ---------- */
+.card {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  scroll-snap-align: start;
+  background: var(--color-dark-card);
+  border: 1px solid rgba(200, 164, 92, 0.18);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  transform: translateY(0);
+  opacity: 0;
+  animation: cardIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.45s ease,
+    border-color 0.45s ease;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(200, 164, 92, 0.6);
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(200, 164, 92, 0.25);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition:
+    transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 0.6s ease;
+  user-select: none;
+}
+
+.card:hover .image {
+  transform: scale(1.08);
+  filter: saturate(1.1);
+}
+
+/* Fallback until real images are added */
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(
+      circle at 30% 20%,
+      rgba(200, 164, 92, 0.35),
+      transparent 55%
+    ),
+    linear-gradient(135deg, #1c1d33 0%, #2b2c45 60%, #141428 100%);
+}
+
+.placeholder span {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  font-weight: 700;
+  color: rgba(232, 213, 160, 0.35);
+}
+
+.shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 45%,
+    rgba(15, 15, 26, 0.55) 80%,
+    rgba(15, 15, 26, 0.85) 100%
+  );
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+
+/* Gold sweep on hover */
+.card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(232, 213, 160, 0.22),
+    transparent
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+  transition: left 0.9s ease;
+}
+
+.card:hover::after {
+  left: 130%;
+}
+
+/* ---------- Slanted label (matches Know More style) ---------- */
+.label {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  padding: 0.45rem 1.1rem;
+  background: rgba(15, 15, 26, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-left: 3px solid var(--color-primary);
+  transform: skewX(-15deg);
+  transition:
+    background 0.4s ease,
+    transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.label span {
+  display: inline-block;
+  transform: skewX(15deg);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--color-white);
+}
+
+.card:hover .label {
+  background: linear-gradient(90deg, #d6b46a, #c8a45c);
+  transform: skewX(-15deg) translateX(4px);
+}
+
+.card:hover .label span {
+  color: #1c1d33;
+}
+
+/* ---------- Controls ---------- */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  margin-top: var(--space-4);
+}
+
+.progress {
+  width: min(220px, 40%);
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.progressBar {
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  background: linear-gradient(90deg, #e8d5a0, #c8a45c);
+  box-shadow: 0 0 10px rgba(200, 164, 92, 0.6);
+  transition: transform 0.3s ease;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.navBtn {
+  width: 2.6rem;
+  height: 2.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(200, 164, 92, 0.3);
+  background: linear-gradient(180deg, #2b2c45 0%, #1c1d33 100%);
+  color: var(--color-white);
+  transform: skewX(-15deg);
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.3s ease;
+}
+
+.navBtn svg {
+  transform: skewX(15deg);
+}
+
+.navBtn:hover,
+.navBtn:focus-visible {
+  background: linear-gradient(180deg, #e8d5a0 0%, #c8a45c 100%);
+  color: #1c1d33;
+  transform: skewX(-15deg) translateY(-2px);
+  box-shadow: 0 10px 22px rgba(200, 164, 92, 0.4);
+  outline: none;
+}
+
+.navBtn:active {
+  transform: skewX(-15deg) translateY(0);
+}
+
+.navBtn[data-edge] {
+  opacity: 0.7;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1024px) {
+  .track {
+    --per-view: 3;
+  }
+}
+
+@media (max-width: 768px) {
+  .track {
+    --per-view: 2;
+    --gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .track {
+    --per-view: 1.15;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .image,
+  .card::after {
+    animation: none;
+    opacity: 1;
+    transition: none;
+  }
+}
