@@ -1,5 +1,4 @@
-"use client";
-
+import Link from "next/link";
 import styles from "./About.module.css";
 
 export default function About() {
@@ -80,10 +79,10 @@ export default function About() {
             </div>
           </div>
 
-          <a href="#contact" className="btn btn--primary">
-            Learn More About Us
+          <Link href="/contact" className="btn btn--primary">
+            Schedule Site Visit
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
+          </Link>
         </div>
       </div>
     </section>

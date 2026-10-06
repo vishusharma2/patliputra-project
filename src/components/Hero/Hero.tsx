@@ -1,7 +1,18 @@
 "use client";
-
+import { Playfair_Display, Montserrat } from "next/font/google";
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import styles from "./Hero.module.css";
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null);
@@ -10,7 +21,9 @@ export default function Hero() {
     const handleScroll = () => {
       if (!heroRef.current) return;
       const scrollY = window.scrollY;
-      const overlay = heroRef.current.querySelector(`.${styles.bgOverlay}`) as HTMLElement;
+      const overlay = heroRef.current.querySelector(
+        `.${styles.bgOverlay}`,
+      ) as HTMLElement;
       if (overlay) {
         overlay.style.transform = `translateY(${scrollY * 0.25}px)`;
       }
@@ -25,20 +38,46 @@ export default function Hero() {
       <div className={styles.bgGradient} />
 
       {/* Floating decorative elements */}
-      <div className={styles.floatingOrb} style={{ top: "15%", left: "10%", animationDelay: "0s" }} />
-      <div className={styles.floatingOrb} style={{ top: "50%", right: "10%", animationDelay: "2s" }} />
+      <div
+        className={styles.floatingOrb}
+        style={{ top: "15%", left: "10%", animationDelay: "0s" }}
+      />
+      <div
+        className={styles.floatingOrb}
+        style={{ top: "50%", right: "10%", animationDelay: "2s" }}
+      />
 
       <div className={`container ${styles.content}`}>
         {/* Golden Angled Banner */}
         <div className={styles.legacyRibbon}>
           <div className={styles.legacyIcon}>
-            <span className={styles.crownIcon}>👑</span>
+            <span className={styles.crownIcon}>
+              <img
+                src="/img/patliputra_signature_park.png"
+                alt="patliputra_signature_park"
+                className="h-[90px] w-[90px] shrink-0 object-contain md:h-[110px] md:w-[110px] lg:h-[200px] lg:w-[160px]"
+              />
+            </span>
           </div>
           <div className={styles.legacyText}>
-            <strong>A LEGACY OF EXCELLENCE</strong>
-            <span>Pioneering landmark residential, commercial &amp; hospitality infrastructure across Bihar for over 25 years.</span>
+            <strong className={`${montserrat.className} text-[1.6rem]`}>
+              The Most Thriving Hotspot
+            </strong>
+            <span className={`${playfair.className} text-[1rem] font-bold`}>
+              Our latest venture,
+            </span>
+            <span className={`${playfair.className} text-[1rem] font-bold`}>
+              Patliputra Signature Park is a RERA-approved project{" "}
+            </span>
+            <span className={`${playfair.className} text-[1rem] font-bold`}>
+              located in CHI V, Greater Noida.
+            </span>
           </div>
-          <span className={styles.reraTag}>RERA APPROVED</span>
+          <span className={styles.reraTag}>
+            <a href="https://signaturepark.app/" target="blank">
+              <button>Know More</button>
+            </a>
+          </span>
         </div>
 
         <div className={styles.mainGrid}>
@@ -56,21 +95,32 @@ export default function Hero() {
             </h1>
 
             <p className={styles.subtitle}>
-              Experience extraordinary living at Patliputra Residences &mdash; Bihar&apos;s most prestigious
-              gated community. High-rise 2, 3 &amp; 4 BHK sky condominiums, world-class amenities,
-              and unmatched capital appreciation for forward-thinking homeowners and investors.
+              Experience extraordinary living at Patliputra Residences &mdash;
+              Bihar&apos;s most prestigious gated community. High-rise 2, 3
+              &amp; 4 BHK sky condominiums, world-class amenities, and unmatched
+              capital appreciation for forward-thinking homeowners and
+              investors.
             </p>
 
             <div className={styles.ctas}>
-              <a href="#properties" className="btn btn--primary btn--lg">
+              <Link href="/properties" className="btn btn--primary btn--lg">
                 Explore Properties
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
-              </a>
-              <a href="#contact" className="btn btn--outline btn--lg">
+              </Link>
+              <Link href="/contact" className="btn btn--outline btn--lg">
                 Schedule Site Visit
-              </a>
+              </Link>
             </div>
           </div>
 

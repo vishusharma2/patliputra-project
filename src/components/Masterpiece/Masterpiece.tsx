@@ -1,5 +1,4 @@
-"use client";
-
+import Link from "next/link";
 import styles from "./Masterpiece.module.css";
 
 export default function Masterpiece() {
@@ -86,15 +85,15 @@ export default function Masterpiece() {
             </div>
 
             <div className={styles.actionRow}>
-              <a href="#contact" className="btn btn--primary btn--lg">
+              <Link href="/contact" className="btn btn--primary btn--lg">
                 Schedule VIP Site Tour
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
-              </a>
-              <a href="#contact" className="btn btn--dark btn--lg">
+              </Link>
+              <Link href="/contact" className="btn btn--dark btn--lg">
                 Download Floor Plans &amp; Price Sheet
-              </a>
+              </Link>
             </div>
           </div>
         </div>

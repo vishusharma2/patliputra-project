@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import styles from "./Properties.module.css";
 
 interface Property {
@@ -173,13 +174,13 @@ export default function Properties() {
                     <span className={styles.priceLabel}>Starting from</span>
                     <span className={styles.priceValue}>{property.price}</span>
                   </div>
-                  <a
-                    href="#contact"
+                  <Link
+                    href="/contact"
                     className="btn btn--dark btn--sm"
                     aria-label={`Enquire about ${property.title}`}
                   >
                     Get Quote
-                  </a>
+                  </Link>
                 </div>
               </div>
             </article>

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import styles from "./Footer.module.css";
 
 interface RecentPost {
@@ -28,6 +30,13 @@ const recentPosts: RecentPost[] = [
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+
+  const handleLinkClick = (href: string) => {
+    if (pathname === href) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   return (
     <footer className={styles.footer} role="contentinfo">
@@ -35,13 +44,17 @@ export default function Footer() {
         <div className={styles.grid}>
           {/* Brand Info */}
           <div className={styles.brandCol}>
-            <a href="#home" className={styles.logo}>
+            <Link
+              href="/"
+              className={styles.logo}
+              onClick={() => handleLinkClick("/")}
+            >
               <span className={styles.logoIcon}>◈</span>
               <div className={styles.logoText}>
                 <span className={styles.logoName}>PATLIPUTRA</span>
                 <span className={styles.logoSub}>GROUP</span>
               </div>
-            </a>
+            </Link>
 
             <p className={styles.brandDesc}>
               Shaping Patna&apos;s urban skyline for over 25 years. Patliputra Group represents uncompromising structural excellence,
@@ -93,9 +106,13 @@ export default function Footer() {
                   />
                   <div className={styles.postContent}>
                     <span className={styles.postDate}>{post.date}</span>
-                    <a href="#media" className={styles.postTitle}>
+                    <Link
+                      href="/media"
+                      className={styles.postTitle}
+                      onClick={() => handleLinkClick("/media")}
+                    >
                       {post.title}
-                    </a>
+                    </Link>
                   </div>
                 </article>
               ))}
@@ -106,14 +123,46 @@ export default function Footer() {
           <div className={styles.col}>
             <h4 className={styles.colTitle}>QUICK LINKS</h4>
             <ul className={styles.linksList}>
-              <li><a href="#home">Home</a></li>
-              <li><a href="#about">About Patliputra Group</a></li>
-              <li><a href="#masterpiece">Our Masterpiece</a></li>
-              <li><a href="#properties">Ongoing Projects</a></li>
-              <li><a href="#diversified">Diversified Verticals</a></li>
-              <li><a href="#landmarks">Upcoming Landmarks</a></li>
-              <li><a href="#why-us">Why Invest With Us</a></li>
-              <li><a href="#contact">Schedule Site Visit</a></li>
+              <li>
+                <Link href="/" onClick={() => handleLinkClick("/")}>
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" onClick={() => handleLinkClick("/about")}>
+                  About Patliputra Group
+                </Link>
+              </li>
+              <li>
+                <Link href="/masterpiece" onClick={() => handleLinkClick("/masterpiece")}>
+                  Our Masterpiece
+                </Link>
+              </li>
+              <li>
+                <Link href="/properties" onClick={() => handleLinkClick("/properties")}>
+                  Ongoing Projects
+                </Link>
+              </li>
+              <li>
+                <Link href="/diversified" onClick={() => handleLinkClick("/diversified")}>
+                  Diversified Verticals
+                </Link>
+              </li>
+              <li>
+                <Link href="/landmarks" onClick={() => handleLinkClick("/landmarks")}>
+                  Upcoming Landmarks
+                </Link>
+              </li>
+              <li>
+                <Link href="/why-us" onClick={() => handleLinkClick("/why-us")}>
+                  Why Invest With Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" onClick={() => handleLinkClick("/contact")}>
+                  Schedule Site Visit
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -138,7 +187,10 @@ export default function Footer() {
                 </svg>
                 <div>
                   <strong>Direct Inquiries</strong>
-                  <p><a href="tel:+919876543210">+91 98765 43210</a> / <a href="tel:+916122234567">+91 612 2234567</a></p>
+                  <p>
+                    <a href="tel:+919876543210">+91 98765 43210</a> /{" "}
+                    <a href="tel:+916122234567">+91 612 2234567</a>
+                  </p>
                 </div>
               </div>
 
@@ -149,7 +201,11 @@ export default function Footer() {
                 </svg>
                 <div>
                   <strong>Email Support</strong>
-                  <p><a href="mailto:info@patliputragroup.com">info@patliputragroup.com</a></p>
+                  <p>
+                    <a href="mailto:info@patliputragroup.com">
+                      info@patliputragroup.com
+                    </a>
+                  </p>
                 </div>
               </div>
             </div>
@@ -162,9 +218,9 @@ export default function Footer() {
             &copy; {currentYear} Patliputra Group. All Rights Reserved. RERA Bihar Reg: BRERAP00234-1/2023.
           </p>
           <div className={styles.bottomLinks}>
-            <a href="#">Privacy Policy</a>
+            <Link href="/about">Privacy Policy</Link>
             <span>&bull;</span>
-            <a href="#">Terms &amp; Conditions</a>
+            <Link href="/about">Terms &amp; Conditions</Link>
             <span>&bull;</span>
             <a href="/sitemap.xml">XML Sitemap</a>
           </div>

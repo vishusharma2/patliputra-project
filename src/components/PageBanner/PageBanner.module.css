@@ -1,0 +1,92 @@
+.banner {
+  position: relative;
+  background: linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 50%, #141428 100%);
+  padding-top: calc(var(--header-height) + 50px);
+  padding-bottom: var(--space-12);
+  border-bottom: 1px solid rgba(200, 164, 92, 0.2);
+  overflow: hidden;
+}
+
+.bannerPattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(200, 164, 92, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.bannerGlow {
+  position: absolute;
+  top: -50%;
+  right: 10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(200, 164, 92, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  color: var(--color-gray-400);
+  margin-bottom: var(--space-3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.breadcrumbLink {
+  color: var(--color-primary-light);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.breadcrumbLink:hover {
+  color: var(--color-primary);
+}
+
+.breadcrumbSep {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.breadcrumbCurrent {
+  color: var(--color-gray-300);
+  font-weight: 600;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 1.6rem + 2vw, 3.2rem);
+  font-weight: 700;
+  color: var(--color-white);
+  line-height: 1.2;
+  margin-bottom: var(--space-2);
+}
+
+.titleHighlight {
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  color: var(--color-gray-300);
+  max-width: 700px;
+  line-height: 1.6;
+}
