@@ -7,6 +7,7 @@ import initialData from "@/data/projectsData.json";
 
 export interface DeliveredProject {
   id?: string;
+  order?: number;
   name: string;
   location: string;
   image: string;
@@ -39,6 +40,10 @@ export default function DeliveredProjects() {
     image: "/img/delivered/satyam.webp",
     description: "",
   });
+
+  // Edit State
+  const [editingProject, setEditingProject] = useState<DeliveredProject | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     // Check if admin is currently authenticated
@@ -105,6 +110,7 @@ export default function DeliveredProjects() {
           category: "delivered",
           project: {
             id: `delivered-${Date.now()}`,
+            order: projects.length + 1,
             name: newProject.name.trim(),
             location: newProject.location.trim() || "Patna",
             image: newProject.image || "/img/delivered/satyam.webp",
@@ -132,6 +138,46 @@ export default function DeliveredProjects() {
     } catch (err) {
       console.error("Error creating delivered project:", err);
       alert("Error adding project");
+    }
+  };
+
+  const handleOpenEdit = (project: DeliveredProject) => {
+    setEditingProject({ ...project });
+    setShowEditModal(true);
+  };
+
+  const handleUpdate = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingProject || !editingProject.id || !editingProject.name.trim()) return;
+
+    try {
+      const res = await fetch("/api/admin/projects", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: "delivered",
+          project: {
+            ...editingProject,
+            name: editingProject.name.trim(),
+            location: editingProject.location.trim() || "Patna",
+            image: editingProject.image || "/img/delivered/satyam.webp",
+            description: editingProject.description.trim(),
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setProjects(data.data.delivered);
+        setShowEditModal(false);
+        setEditingProject(null);
+        setToast(`✓ Updated "${editingProject.name}" successfully`);
+      } else {
+        alert(data.error || "Failed to update project");
+      }
+    } catch (err) {
+      console.error("Error updating delivered project:", err);
+      alert("Error updating project");
     }
   };
 
@@ -260,7 +306,7 @@ export default function DeliveredProjects() {
                   <span>Delivered</span>
                 </span>
                 <span className={styles.index} aria-hidden="true">
-                  {String(i + 1).padStart(2, "0")}
+                  {String(p.order || i + 1).padStart(2, "0")}
                 </span>
               </div>
 
@@ -294,52 +340,14 @@ export default function DeliveredProjects() {
                       justifyContent: "flex-end",
                     }}
                   >
-                    {confirmDeleteId === p.id ? (
-                      <div style={{ display: "flex", gap: "6px" }}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setConfirmDeleteId(null);
-                            handleDelete(p.id, p.name);
-                          }}
-                          style={{
-                            background: "#e74c3c",
-                            border: "none",
-                            color: "#ffffff",
-                            padding: "0.35rem 0.65rem",
-                            borderRadius: "4px",
-                            fontSize: "0.72rem",
-                            fontWeight: 700,
-                            cursor: "pointer",
-                          }}
-                        >
-                          Confirm
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setConfirmDeleteId(null)}
-                          style={{
-                            background: "#e0e0e0",
-                            border: "none",
-                            color: "#333",
-                            padding: "0.35rem 0.55rem",
-                            borderRadius: "4px",
-                            fontSize: "0.72rem",
-                            fontWeight: 600,
-                            cursor: "pointer",
-                          }}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                       <button
                         type="button"
-                        onClick={() => setConfirmDeleteId(p.id || null)}
+                        onClick={() => handleOpenEdit(p)}
                         style={{
-                          background: "rgba(231, 76, 60, 0.1)",
-                          border: "1px solid rgba(231, 76, 60, 0.4)",
-                          color: "#c0392b",
+                          background: "rgba(200, 164, 92, 0.12)",
+                          border: "1px solid rgba(200, 164, 92, 0.45)",
+                          color: "#deb360",
                           padding: "0.35rem 0.75rem",
                           borderRadius: "6px",
                           fontSize: "0.75rem",
@@ -349,14 +357,86 @@ export default function DeliveredProjects() {
                           alignItems: "center",
                           gap: "4px",
                         }}
+                        title="Edit Project"
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="3 6 5 6 21 6" />
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.2"
+                        >
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                         </svg>
-                        Remove (Admin)
+                        Edit
                       </button>
-                    )}
+
+                      {confirmDeleteId === p.id ? (
+                        <div style={{ display: "flex", gap: "6px" }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setConfirmDeleteId(null);
+                              handleDelete(p.id, p.name);
+                            }}
+                            style={{
+                              background: "#e74c3c",
+                              border: "none",
+                              color: "#ffffff",
+                              padding: "0.35rem 0.65rem",
+                              borderRadius: "4px",
+                              fontSize: "0.72rem",
+                              fontWeight: 700,
+                              cursor: "pointer",
+                            }}
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmDeleteId(null)}
+                            style={{
+                              background: "#e0e0e0",
+                              border: "none",
+                              color: "#333",
+                              padding: "0.35rem 0.55rem",
+                              borderRadius: "4px",
+                              fontSize: "0.72rem",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDeleteId(p.id || null)}
+                          style={{
+                            background: "rgba(231, 76, 60, 0.1)",
+                            border: "1px solid rgba(231, 76, 60, 0.4)",
+                            color: "#c0392b",
+                            padding: "0.35rem 0.75rem",
+                            borderRadius: "6px",
+                            fontSize: "0.75rem",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          </svg>
+                          Remove
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -403,16 +483,36 @@ export default function DeliveredProjects() {
                   paddingBottom: "0.75rem",
                 }}
               >
-                <h3
-                  style={{
-                    fontFamily: "var(--font-heading)",
-                    fontSize: "1.25rem",
-                    color: "#deb360",
-                    margin: 0,
-                  }}
-                >
-                  Add Delivered Project
-                </h3>
+                <div>
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-heading)",
+                      fontSize: "1.25rem",
+                      color: "#deb360",
+                      margin: 0,
+                    }}
+                  >
+                    Add Delivered Project
+                  </h3>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "4px" }}>
+                    <span
+                      style={{
+                        fontSize: "0.72rem",
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                        background: "rgba(200, 164, 92, 0.15)",
+                        border: "1px solid rgba(200, 164, 92, 0.35)",
+                        color: "#deb360",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Order Position: #{String(projects.length + 1).padStart(2, "0")}
+                    </span>
+                    <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.5)" }}>
+                      (First added remains #01)
+                    </span>
+                  </div>
+                </div>
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
@@ -546,6 +646,227 @@ export default function DeliveredProjects() {
                     }}
                   >
                     Publish Project
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal for Editing Delivered Project */}
+        {showEditModal && editingProject && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.8)",
+              backdropFilter: "blur(8px)",
+              zIndex: 9999,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "1rem",
+            }}
+            onClick={() => setShowEditModal(false)}
+          >
+            <div
+              style={{
+                background: "#141525",
+                border: "1px solid rgba(200, 164, 92, 0.4)",
+                borderRadius: "16px",
+                width: "100%",
+                maxWidth: "520px",
+                padding: "2rem",
+                color: "#ffffff",
+                boxShadow: "0 20px 60px rgba(0,0,0,0.7)",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "1.25rem",
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  paddingBottom: "0.75rem",
+                }}
+              >
+                <div>
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-heading)",
+                      fontSize: "1.25rem",
+                      color: "#deb360",
+                      margin: 0,
+                    }}
+                  >
+                    Edit Delivered Project
+                  </h3>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      fontSize: "0.72rem",
+                      color: "#deb360",
+                      marginTop: "4px",
+                    }}
+                  >
+                    Project #{String(editingProject.order || 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "rgba(255,255,255,0.6)",
+                    fontSize: "1.5rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  &times;
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdate} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                    PROJECT NAME *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Satyam Apartment"
+                    value={editingProject.name}
+                    onChange={(e) => setEditingProject({ ...editingProject, name: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "0.65rem 0.85rem",
+                      background: "#0c0d16",
+                      border: "1px solid rgba(255,255,255,0.2)",
+                      borderRadius: "6px",
+                      color: "#fff",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                    LOCATION *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Boring Road, Patna"
+                    value={editingProject.location}
+                    onChange={(e) => setEditingProject({ ...editingProject, location: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "0.65rem 0.85rem",
+                      background: "#0c0d16",
+                      border: "1px solid rgba(255,255,255,0.2)",
+                      borderRadius: "6px",
+                      color: "#fff",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                    IMAGE PRESET
+                  </label>
+                  <div style={{ display: "flex", gap: "6px", overflowX: "auto", padding: "4px 0" }}>
+                    {PRESET_DELIVERED_IMAGES.map((img) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={img}
+                        src={img}
+                        alt="preset"
+                        onClick={() => setEditingProject({ ...editingProject, image: img })}
+                        style={{
+                          width: "56px",
+                          height: "38px",
+                          objectFit: "cover",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          border: editingProject.image === img ? "2px solid #deb360" : "2px solid transparent",
+                          opacity: editingProject.image === img ? 1 : 0.65,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                    CUSTOM IMAGE URL
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="/img/delivered/satyam.webp"
+                    value={editingProject.image}
+                    onChange={(e) => setEditingProject({ ...editingProject, image: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "0.65rem 0.85rem",
+                      background: "#0c0d16",
+                      border: "1px solid rgba(255,255,255,0.2)",
+                      borderRadius: "6px",
+                      color: "#fff",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                    DESCRIPTION
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Key architectural highlights and amenities..."
+                    value={editingProject.description}
+                    onChange={(e) => setEditingProject({ ...editingProject, description: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "0.65rem 0.85rem",
+                      background: "#0c0d16",
+                      border: "1px solid rgba(255,255,255,0.2)",
+                      borderRadius: "6px",
+                      color: "#fff",
+                      fontFamily: "inherit",
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", marginTop: "0.5rem" }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(false)}
+                    style={{
+                      background: "rgba(255,255,255,0.1)",
+                      border: "none",
+                      color: "#fff",
+                      padding: "0.6rem 1.2rem",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      background: "linear-gradient(135deg, #deb360, #c8a45c)",
+                      color: "#0f0f1a",
+                      border: "none",
+                      padding: "0.6rem 1.4rem",
+                      borderRadius: "6px",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Save Changes
                   </button>
                 </div>
               </form>

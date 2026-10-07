@@ -7,6 +7,7 @@ import initialData from "@/data/projectsData.json";
 
 export interface Property {
   id: string;
+  order?: number;
   type: string;
   title: string;
   location: string;
@@ -52,6 +53,11 @@ export default function Properties() {
     rera: "BRERAP00350-1/2026",
     features: "Clubhouse Access, 24/7 Security, Power Backup, High Speed Lifts",
   });
+
+  // Edit ongoing property state
+  const [editingProperty, setEditingProperty] = useState<Property | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingFeaturesStr, setEditingFeaturesStr] = useState("");
 
   useEffect(() => {
     // Check if admin is currently authenticated
@@ -120,6 +126,7 @@ export default function Properties() {
           category: "ongoing",
           project: {
             id: `ongoing-${Date.now()}`,
+            order: propertiesList.length + 1,
             title: newOngoing.title.trim(),
             type: newOngoing.type.trim() || "3 & 4 BHK",
             location: newOngoing.location.trim() || "Bailey Road, Patna",
@@ -159,6 +166,61 @@ export default function Properties() {
     } catch (err) {
       console.error("Error creating ongoing project:", err);
       alert("Error adding project");
+    }
+  };
+
+  const handleOpenEdit = (property: Property) => {
+    setEditingProperty({ ...property });
+    setEditingFeaturesStr(
+      Array.isArray(property.features) ? property.features.join(", ") : ""
+    );
+    setShowEditModal(true);
+  };
+
+  const handleUpdate = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingProperty || !editingProperty.id || !editingProperty.title.trim()) return;
+
+    const featureList = editingFeaturesStr
+      .split(",")
+      .map((f) => f.trim())
+      .filter(Boolean);
+
+    try {
+      const res = await fetch("/api/admin/projects", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: "ongoing",
+          project: {
+            ...editingProperty,
+            title: editingProperty.title.trim(),
+            type: editingProperty.type.trim() || "3 & 4 BHK",
+            location: editingProperty.location.trim() || "Bailey Road, Patna",
+            area: editingProperty.area.trim() || "1,800 - 2,500 sq.ft.",
+            price: editingProperty.price.trim() || "Price on Request",
+            bedrooms: Number(editingProperty.bedrooms) || 3,
+            bathrooms: Number(editingProperty.bathrooms) || 3,
+            image: editingProperty.image || ONGOING_PRESET_IMAGES[0],
+            tag: editingProperty.tag || "Under Construction",
+            rera: editingProperty.rera.trim() || "BRERAP00-PENDING",
+            features: featureList.length > 0 ? featureList : editingProperty.features,
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setPropertiesList(data.data.ongoing);
+        setShowEditModal(false);
+        setEditingProperty(null);
+        setToast(`✓ Updated "${editingProperty.title}" successfully`);
+      } else {
+        alert(data.error || "Failed to update ongoing project");
+      }
+    } catch (err) {
+      console.error("Error updating ongoing project:", err);
+      alert("Error updating project");
     }
   };
 
@@ -300,9 +362,9 @@ export default function Properties() {
                   width={600}
                   height={400}
                 />
-                {property.tag && (
-                  <span className={styles.cardTag}>{property.tag}</span>
-                )}
+                <span className={styles.cardTag}>
+                  {property.order ? `#${String(property.order).padStart(2, "0")} • ` : ""}{property.tag || "Ongoing"}
+                </span>
                 <div className={styles.cardOverlay}>
                   <a href="#contact" className="btn btn--primary btn--sm">
                     Book Site Inspection
@@ -355,81 +417,108 @@ export default function Properties() {
                     <span className={styles.priceLabel}>Starting from</span>
                     <span className={styles.priceValue}>{property.price}</span>
                   </div>
-                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                    <Link
-                      href="/contact"
-                      className="btn btn--dark btn--sm"
-                      aria-label={`Enquire about ${property.title}`}
-                    >
-                      Get Quote
-                    </Link>
-                    {isAdmin && (
-                      confirmDeleteId === property.id ? (
-                        <div style={{ display: "flex", gap: "4px" }}>
+                    <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                      <Link
+                        href="/contact"
+                        className="btn btn--dark btn--sm"
+                        aria-label={`Enquire about ${property.title}`}
+                      >
+                        Get Quote
+                      </Link>
+                      {isAdmin && (
+                        <>
                           <button
                             type="button"
-                            onClick={() => {
-                              setConfirmDeleteId(null);
-                              handleDelete(property.id, property.title);
-                            }}
+                            onClick={() => handleOpenEdit(property)}
                             style={{
-                              background: "#e74c3c",
-                              border: "none",
-                              color: "#ffffff",
-                              padding: "0.35rem 0.55rem",
+                              background: "rgba(200, 164, 92, 0.12)",
+                              border: "1px solid rgba(200, 164, 92, 0.45)",
+                              color: "#deb360",
+                              padding: "0.45rem 0.65rem",
                               borderRadius: "4px",
-                              fontSize: "0.72rem",
-                              fontWeight: 700,
-                              cursor: "pointer",
-                            }}
-                          >
-                            Confirm
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setConfirmDeleteId(null)}
-                            style={{
-                              background: "rgba(255,255,255,0.2)",
-                              border: "none",
-                              color: "#ffffff",
-                              padding: "0.35rem 0.45rem",
-                              borderRadius: "4px",
-                              fontSize: "0.72rem",
+                              fontSize: "0.75rem",
                               fontWeight: 600,
                               cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "3px",
                             }}
+                            title="Edit Project Details"
                           >
-                            Cancel
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                            Edit
                           </button>
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => setConfirmDeleteId(property.id)}
-                          style={{
-                            background: "rgba(231, 76, 60, 0.12)",
-                            border: "1px solid rgba(231, 76, 60, 0.4)",
-                            color: "#ff8e8e",
-                            padding: "0.45rem 0.65rem",
-                            borderRadius: "4px",
-                            fontSize: "0.75rem",
-                            fontWeight: 600,
-                            cursor: "pointer",
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "3px",
-                          }}
-                          title="Remove as Administrator"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6" />
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                          </svg>
-                          Remove
-                        </button>
-                      )
-                    )}
-                  </div>
+
+                          {confirmDeleteId === property.id ? (
+                            <div style={{ display: "flex", gap: "4px" }}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setConfirmDeleteId(null);
+                                  handleDelete(property.id, property.title);
+                                }}
+                                style={{
+                                  background: "#e74c3c",
+                                  border: "none",
+                                  color: "#ffffff",
+                                  padding: "0.35rem 0.55rem",
+                                  borderRadius: "4px",
+                                  fontSize: "0.72rem",
+                                  fontWeight: 700,
+                                  cursor: "pointer",
+                                }}
+                              >
+                                Confirm
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setConfirmDeleteId(null)}
+                                style={{
+                                  background: "rgba(255,255,255,0.2)",
+                                  border: "none",
+                                  color: "#ffffff",
+                                  padding: "0.35rem 0.45rem",
+                                  borderRadius: "4px",
+                                  fontSize: "0.72rem",
+                                  fontWeight: 600,
+                                  cursor: "pointer",
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setConfirmDeleteId(property.id)}
+                              style={{
+                                background: "rgba(231, 76, 60, 0.12)",
+                                border: "1px solid rgba(231, 76, 60, 0.4)",
+                                color: "#ff8e8e",
+                                padding: "0.45rem 0.65rem",
+                                borderRadius: "4px",
+                                fontSize: "0.75rem",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "3px",
+                              }}
+                              title="Remove as Administrator"
+                            >
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                              </svg>
+                              Remove
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </div>
                 </div>
               </div>
             </article>
@@ -477,16 +566,36 @@ export default function Properties() {
                   paddingBottom: "0.75rem",
                 }}
               >
-                <h3
-                  style={{
-                    fontFamily: "var(--font-heading)",
-                    fontSize: "1.25rem",
-                    color: "#deb360",
-                    margin: 0,
-                  }}
-                >
-                  Add Ongoing Development
-                </h3>
+                <div>
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-heading)",
+                      fontSize: "1.25rem",
+                      color: "#deb360",
+                      margin: 0,
+                    }}
+                  >
+                    Add Ongoing Development
+                  </h3>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "4px" }}>
+                    <span
+                      style={{
+                        fontSize: "0.72rem",
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                        background: "rgba(200, 164, 92, 0.15)",
+                        border: "1px solid rgba(200, 164, 92, 0.35)",
+                        color: "#deb360",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Order Position: #{String(propertiesList.length + 1).padStart(2, "0")}
+                    </span>
+                    <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.5)" }}>
+                      (First added remains #01)
+                    </span>
+                  </div>
+                </div>
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
@@ -700,6 +809,364 @@ export default function Properties() {
                     }}
                   >
                     Publish Development
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal for Editing Ongoing Development */}
+        {showEditModal && editingProperty && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.8)",
+              backdropFilter: "blur(8px)",
+              zIndex: 9999,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "1rem",
+            }}
+            onClick={() => setShowEditModal(false)}
+          >
+            <div
+              style={{
+                background: "#141525",
+                border: "1px solid rgba(200, 164, 92, 0.4)",
+                borderRadius: "16px",
+                width: "100%",
+                maxWidth: "560px",
+                maxHeight: "90vh",
+                overflowY: "auto",
+                padding: "2rem",
+                color: "#ffffff",
+                boxShadow: "0 20px 60px rgba(0,0,0,0.7)",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "1.25rem",
+                  borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  paddingBottom: "0.75rem",
+                }}
+              >
+                <div>
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-heading)",
+                      fontSize: "1.25rem",
+                      color: "#deb360",
+                      margin: 0,
+                    }}
+                  >
+                    Edit Ongoing Development
+                  </h3>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "4px" }}>
+                    <span
+                      style={{
+                        fontSize: "0.72rem",
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                        background: "rgba(200, 164, 92, 0.15)",
+                        border: "1px solid rgba(200, 164, 92, 0.35)",
+                        color: "#deb360",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Project #{String(editingProperty.order || 1).padStart(2, "0")}
+                    </span>
+                    <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.5)" }}>
+                      ID: {editingProperty.id}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "rgba(255,255,255,0.6)",
+                    fontSize: "1.5rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  &times;
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdate} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                      PROJECT TITLE *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Patliputra Royal Crest"
+                      value={editingProperty.title}
+                      onChange={(e) => setEditingProperty({ ...editingProperty, title: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "0.65rem 0.85rem",
+                        background: "#0c0d16",
+                        border: "1px solid rgba(255,255,255,0.2)",
+                        borderRadius: "6px",
+                        color: "#fff",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                      TYPE / CONFIGURATION *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. 3 & 4 BHK"
+                      value={editingProperty.type}
+                      onChange={(e) => setEditingProperty({ ...editingProperty, type: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "0.65rem 0.85rem",
+                        background: "#0c0d16",
+                        border: "1px solid rgba(255,255,255,0.2)",
+                        borderRadius: "6px",
+                        color: "#fff",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                      LOCATION *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Bailey Road, Patna"
+                      value={editingProperty.location}
+                      onChange={(e) => setEditingProperty({ ...editingProperty, location: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "0.65rem 0.85rem",
+                        background: "#0c0d16",
+                        border: "1px solid rgba(255,255,255,0.2)",
+                        borderRadius: "6px",
+                        color: "#fff",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                      STATUS TAG
+                    </label>
+                    <select
+                      value={editingProperty.tag || "Under Construction"}
+                      onChange={(e) => setEditingProperty({ ...editingProperty, tag: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "0.65rem 0.85rem",
+                        background: "#0c0d16",
+                        border: "1px solid rgba(255,255,255,0.2)",
+                        borderRadius: "6px",
+                        color: "#fff",
+                      }}
+                    >
+                      <option value="Under Construction">Under Construction</option>
+                      <option value="Ready To Move In">Ready To Move In</option>
+                      <option value="Ultra Luxury">Ultra Luxury</option>
+                      <option value="Upcoming Launch">Upcoming Launch</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                      CARPET AREA
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 1,800 - 2,400 sq.ft."
+                      value={editingProperty.area}
+                      onChange={(e) => setEditingProperty({ ...editingProperty, area: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "0.65rem 0.85rem",
+                        background: "#0c0d16",
+                        border: "1px solid rgba(255,255,255,0.2)",
+                        borderRadius: "6px",
+                        color: "#fff",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                      PRICE / STARTING
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. ₹85 Lakhs*"
+                      value={editingProperty.price}
+                      onChange={(e) => setEditingProperty({ ...editingProperty, price: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "0.65rem 0.85rem",
+                        background: "#0c0d16",
+                        border: "1px solid rgba(255,255,255,0.2)",
+                        borderRadius: "6px",
+                        color: "#fff",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                      BEDROOMS (BHK)
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={8}
+                      value={editingProperty.bedrooms}
+                      onChange={(e) => setEditingProperty({ ...editingProperty, bedrooms: Number(e.target.value) })}
+                      style={{
+                        width: "100%",
+                        padding: "0.65rem 0.85rem",
+                        background: "#0c0d16",
+                        border: "1px solid rgba(255,255,255,0.2)",
+                        borderRadius: "6px",
+                        color: "#fff",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                      BATHROOMS
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={8}
+                      value={editingProperty.bathrooms}
+                      onChange={(e) => setEditingProperty({ ...editingProperty, bathrooms: Number(e.target.value) })}
+                      style={{
+                        width: "100%",
+                        padding: "0.65rem 0.85rem",
+                        background: "#0c0d16",
+                        border: "1px solid rgba(255,255,255,0.2)",
+                        borderRadius: "6px",
+                        color: "#fff",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                    RERA NUMBER
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. BRERAP00350-1/2026"
+                    value={editingProperty.rera}
+                    onChange={(e) => setEditingProperty({ ...editingProperty, rera: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "0.65rem 0.85rem",
+                      background: "#0c0d16",
+                      border: "1px solid rgba(255,255,255,0.2)",
+                      borderRadius: "6px",
+                      color: "#fff",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                    CUSTOM IMAGE URL
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="https://..."
+                    value={editingProperty.image}
+                    onChange={(e) => setEditingProperty({ ...editingProperty, image: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "0.65rem 0.85rem",
+                      background: "#0c0d16",
+                      border: "1px solid rgba(255,255,255,0.2)",
+                      borderRadius: "6px",
+                      color: "#fff",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "4px" }}>
+                    FEATURES (COMMA-SEPARATED)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Clubhouse, Security, Gym, Power Backup"
+                    value={editingFeaturesStr}
+                    onChange={(e) => setEditingFeaturesStr(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "0.65rem 0.85rem",
+                      background: "#0c0d16",
+                      border: "1px solid rgba(255,255,255,0.2)",
+                      borderRadius: "6px",
+                      color: "#fff",
+                    }}
+                  />
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", marginTop: "0.5rem" }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(false)}
+                    style={{
+                      background: "rgba(255,255,255,0.1)",
+                      border: "none",
+                      color: "#fff",
+                      padding: "0.6rem 1.2rem",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      background: "linear-gradient(135deg, #deb360, #c8a45c)",
+                      color: "#0f0f1a",
+                      border: "none",
+                      padding: "0.6rem 1.4rem",
+                      borderRadius: "6px",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Save Changes
                   </button>
                 </div>
               </form>

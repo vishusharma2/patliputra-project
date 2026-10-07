@@ -11,6 +11,7 @@ const DEMO_ADMIN_PASS = "Patliputra@Admin2026";
 
 interface DeliveredProject {
   id?: string;
+  order?: number;
   name: string;
   location: string;
   image: string;
@@ -19,6 +20,7 @@ interface DeliveredProject {
 
 interface OngoingProject {
   id: string;
+  order?: number;
   type: string;
   title: string;
   location: string;
@@ -122,6 +124,18 @@ export default function PatliputraLoginPage() {
     features:
       "Clubhouse Access, 24/7 Multi-Tier Security, High Speed Elevators, 100% Power Backup",
   });
+
+  // Edit Project States & Modals
+  const [editingDelivered, setEditingDelivered] =
+    useState<DeliveredProject | null>(null);
+  const [showEditDeliveredModal, setShowEditDeliveredModal] = useState(false);
+
+  const [editingOngoing, setEditingOngoing] = useState<OngoingProject | null>(
+    null
+  );
+  const [showEditOngoingModal, setShowEditOngoingModal] = useState(false);
+  const [editingOngoingFeaturesStr, setEditingOngoingFeaturesStr] =
+    useState("");
 
   // Check saved session on mount & set document title
   useEffect(() => {
@@ -255,6 +269,7 @@ export default function PatliputraLoginPage() {
           category: "delivered",
           project: {
             id: `delivered-${Date.now()}`,
+            order: deliveredProjects.length + 1,
             name: newDelivered.name.trim(),
             location: newDelivered.location.trim() || "Patna",
             image: newDelivered.image || "/img/delivered/satyam.webp",
@@ -338,6 +353,7 @@ export default function PatliputraLoginPage() {
           category: "ongoing",
           project: {
             id: `ongoing-${Date.now()}`,
+            order: ongoingProjects.length + 1,
             title: newOngoing.title.trim(),
             type: newOngoing.type.trim() || "3 & 4 BHK",
             location: newOngoing.location.trim() || "Bailey Road, Patna",
@@ -406,6 +422,122 @@ export default function PatliputraLoginPage() {
     } catch (err) {
       console.error("Error deleting ongoing project:", err);
       alert("Network error deleting project");
+    }
+  };
+
+  // Open Edit Delivered Modal
+  const handleOpenEditDelivered = (project: DeliveredProject) => {
+    setEditingDelivered({ ...project });
+    setShowEditDeliveredModal(true);
+  };
+
+  // Submit Edit Delivered Project
+  const handleUpdateDelivered = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingDelivered || !editingDelivered.id || !editingDelivered.name.trim()) {
+      alert("Please enter a valid project name.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin/projects", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: "delivered",
+          project: {
+            ...editingDelivered,
+            name: editingDelivered.name.trim(),
+            location: editingDelivered.location.trim() || "Patna",
+            image: editingDelivered.image || "/img/delivered/satyam.webp",
+            description: editingDelivered.description.trim(),
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setDeliveredProjects(data.data.delivered);
+        setShowEditDeliveredModal(false);
+        setEditingDelivered(null);
+        setToastMessage(
+          `✓ Delivered project "${editingDelivered.name}" updated successfully!`
+        );
+      } else {
+        alert(data.error || "Failed to update project");
+      }
+    } catch (err) {
+      console.error("Error updating delivered project:", err);
+      alert("Network error updating project");
+    }
+  };
+
+  // Open Edit Ongoing Modal
+  const handleOpenEditOngoing = (project: OngoingProject) => {
+    setEditingOngoing({ ...project });
+    setEditingOngoingFeaturesStr(
+      Array.isArray(project.features) ? project.features.join(", ") : ""
+    );
+    setShowEditOngoingModal(true);
+  };
+
+  // Submit Edit Ongoing Project
+  const handleUpdateOngoing = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingOngoing || !editingOngoing.id || !editingOngoing.title.trim()) {
+      alert("Please enter a valid project title.");
+      return;
+    }
+
+    const featureList = editingOngoingFeaturesStr
+      .split(",")
+      .map((f) => f.trim())
+      .filter(Boolean);
+
+    try {
+      const res = await fetch("/api/admin/projects", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: "ongoing",
+          project: {
+            ...editingOngoing,
+            title: editingOngoing.title.trim(),
+            type: editingOngoing.type.trim() || "3 & 4 BHK",
+            location: editingOngoing.location.trim() || "Bailey Road, Patna",
+            area: editingOngoing.area.trim() || "1,800 - 2,500 sq.ft.",
+            price: editingOngoing.price.trim() || "Price on Request",
+            bedrooms: Number(editingOngoing.bedrooms) || 3,
+            bathrooms: Number(editingOngoing.bathrooms) || 3,
+            image: editingOngoing.image || ONGOING_PRESET_IMAGES[0].url,
+            tag: editingOngoing.tag || "Under Construction",
+            rera: editingOngoing.rera.trim() || "BRERAP00-PENDING",
+            features:
+              featureList.length > 0
+                ? featureList
+                : editingOngoing.features || [
+                    "Clubhouse Access",
+                    "24/7 Security",
+                    "Power Backup",
+                  ],
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setOngoingProjects(data.data.ongoing);
+        setShowEditOngoingModal(false);
+        setEditingOngoing(null);
+        setToastMessage(
+          `✓ Ongoing project "${editingOngoing.title}" updated successfully!`
+        );
+      } else {
+        alert(data.error || "Failed to update project");
+      }
+    } catch (err) {
+      console.error("Error updating ongoing project:", err);
+      alert("Network error updating project");
     }
   };
 
@@ -852,7 +984,9 @@ export default function PatliputraLoginPage() {
                       <div className={styles.cardMedia}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={p.image} alt={p.name} loading="lazy" />
-                        <span className={styles.cardStatusPill}>Delivered</span>
+                        <span className={styles.cardStatusPill}>
+                          Delivered &bull; #{String(p.order || index + 1).padStart(2, "0")}
+                        </span>
                       </div>
                       <div className={styles.cardBody}>
                         <h3 className={styles.cardTitle}>{p.name}</h3>
@@ -880,31 +1014,12 @@ export default function PatliputraLoginPage() {
                           >
                             ID: {p.id || "legacy"}
                           </span>
-                          {confirmDeleteId === p.id ? (
-                            <div className={styles.deleteConfirmGroup}>
-                              <button
-                                type="button"
-                                className={styles.deleteConfirmBtn}
-                                onClick={() => {
-                                  setConfirmDeleteId(null);
-                                  handleDeleteDelivered(p.id, p.name);
-                                }}
-                              >
-                                Confirm Delete
-                              </button>
-                              <button
-                                type="button"
-                                className={styles.deleteCancelBtn}
-                                onClick={() => setConfirmDeleteId(null)}
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          ) : (
+                          <div className={styles.cardActionBtns}>
                             <button
                               type="button"
-                              className={styles.deleteCardBtn}
-                              onClick={() => setConfirmDeleteId(p.id || null)}
+                              className={styles.editCardBtn}
+                              onClick={() => handleOpenEditDelivered(p)}
+                              title="Edit project information"
                             >
                               <svg
                                 width="13"
@@ -912,14 +1027,55 @@ export default function PatliputraLoginPage() {
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
-                                strokeWidth="2"
+                                strokeWidth="2.2"
                               >
-                                <polyline points="3 6 5 6 21 6" />
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                               </svg>
-                              <span>Remove</span>
+                              <span>Edit</span>
                             </button>
-                          )}
+
+                            {confirmDeleteId === p.id ? (
+                              <div className={styles.deleteConfirmGroup}>
+                                <button
+                                  type="button"
+                                  className={styles.deleteConfirmBtn}
+                                  onClick={() => {
+                                    setConfirmDeleteId(null);
+                                    handleDeleteDelivered(p.id, p.name);
+                                  }}
+                                >
+                                  Confirm
+                                </button>
+                                <button
+                                  type="button"
+                                  className={styles.deleteCancelBtn}
+                                  onClick={() => setConfirmDeleteId(null)}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                className={styles.deleteCardBtn}
+                                onClick={() => setConfirmDeleteId(p.id || null)}
+                              >
+                                <svg
+                                  width="13"
+                                  height="13"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                >
+                                  <polyline points="3 6 5 6 21 6" />
+                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                                <span>Remove</span>
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -959,13 +1115,13 @@ export default function PatliputraLoginPage() {
                 </div>
 
                 <div className={styles.projectsGrid}>
-                  {ongoingProjects.map((p) => (
+                  {ongoingProjects.map((p, index) => (
                     <div key={p.id} className={styles.projectCard}>
                       <div className={styles.cardMedia}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={p.image} alt={p.title} loading="lazy" />
                         <span className={styles.cardStatusPill}>
-                          {p.tag || "Ongoing"}
+                          {p.tag || "Ongoing"} &bull; #{String(p.order || index + 1).padStart(2, "0")}
                         </span>
                       </div>
                       <div className={styles.cardBody}>
@@ -1036,31 +1192,12 @@ export default function PatliputraLoginPage() {
                           >
                             ID: {p.id}
                           </span>
-                          {confirmDeleteId === p.id ? (
-                            <div className={styles.deleteConfirmGroup}>
-                              <button
-                                type="button"
-                                className={styles.deleteConfirmBtn}
-                                onClick={() => {
-                                  setConfirmDeleteId(null);
-                                  handleDeleteOngoing(p.id, p.title);
-                                }}
-                              >
-                                Confirm Delete
-                              </button>
-                              <button
-                                type="button"
-                                className={styles.deleteCancelBtn}
-                                onClick={() => setConfirmDeleteId(null)}
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          ) : (
+                          <div className={styles.cardActionBtns}>
                             <button
                               type="button"
-                              className={styles.deleteCardBtn}
-                              onClick={() => setConfirmDeleteId(p.id)}
+                              className={styles.editCardBtn}
+                              onClick={() => handleOpenEditOngoing(p)}
+                              title="Edit development information"
                             >
                               <svg
                                 width="13"
@@ -1068,14 +1205,55 @@ export default function PatliputraLoginPage() {
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
-                                strokeWidth="2"
+                                strokeWidth="2.2"
                               >
-                                <polyline points="3 6 5 6 21 6" />
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                               </svg>
-                              <span>Remove</span>
+                              <span>Edit</span>
                             </button>
-                          )}
+
+                            {confirmDeleteId === p.id ? (
+                              <div className={styles.deleteConfirmGroup}>
+                                <button
+                                  type="button"
+                                  className={styles.deleteConfirmBtn}
+                                  onClick={() => {
+                                    setConfirmDeleteId(null);
+                                    handleDeleteOngoing(p.id, p.title);
+                                  }}
+                                >
+                                  Confirm
+                                </button>
+                                <button
+                                  type="button"
+                                  className={styles.deleteCancelBtn}
+                                  onClick={() => setConfirmDeleteId(null)}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                className={styles.deleteCardBtn}
+                                onClick={() => setConfirmDeleteId(p.id)}
+                              >
+                                <svg
+                                  width="13"
+                                  height="13"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                >
+                                  <polyline points="3 6 5 6 21 6" />
+                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                                <span>Remove</span>
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1178,7 +1356,27 @@ export default function PatliputraLoginPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className={styles.modalHeader}>
-                <h3 className={styles.modalTitle}>Add Delivered Project</h3>
+                <div>
+                  <h3 className={styles.modalTitle}>Add Delivered Project</h3>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        background: "rgba(200, 164, 92, 0.15)",
+                        border: "1px solid rgba(200, 164, 92, 0.35)",
+                        color: "#deb360",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Order Position: #{String(deliveredProjects.length + 1).padStart(2, "0")}
+                    </span>
+                    <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)" }}>
+                      (First added remains #01 &bull; new project is appended sequentially)
+                    </span>
+                  </div>
+                </div>
                 <button
                   type="button"
                   className={styles.modalCloseBtn}
@@ -1302,7 +1500,27 @@ export default function PatliputraLoginPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className={styles.modalHeader}>
-                <h3 className={styles.modalTitle}>Add Ongoing Development</h3>
+                <div>
+                  <h3 className={styles.modalTitle}>Add Ongoing Development</h3>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        background: "rgba(200, 164, 92, 0.15)",
+                        border: "1px solid rgba(200, 164, 92, 0.35)",
+                        color: "#deb360",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Order Position: #{String(ongoingProjects.length + 1).padStart(2, "0")}
+                    </span>
+                    <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)" }}>
+                      (First added remains #01 &bull; new project is appended sequentially)
+                    </span>
+                  </div>
+                </div>
                 <button
                   type="button"
                   className={styles.modalCloseBtn}
@@ -1505,6 +1723,445 @@ export default function PatliputraLoginPage() {
                   </button>
                   <button type="submit" className={styles.btnSubmit}>
                     Publish Ongoing Development
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL: EDIT DELIVERED PROJECT */}
+        {showEditDeliveredModal && editingDelivered && (
+          <div
+            className={styles.modalBackdrop}
+            onClick={() => setShowEditDeliveredModal(false)}
+          >
+            <div
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.modalHeader}>
+                <div>
+                  <h3 className={styles.modalTitle}>Edit Delivered Project</h3>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      marginTop: "4px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        background: "rgba(200, 164, 92, 0.15)",
+                        border: "1px solid rgba(200, 164, 92, 0.35)",
+                        color: "#deb360",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Project #{String(editingDelivered.order || 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.72rem",
+                        color: "rgba(255,255,255,0.5)",
+                      }}
+                    >
+                      ID: {editingDelivered.id}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className={styles.modalCloseBtn}
+                  onClick={() => setShowEditDeliveredModal(false)}
+                >
+                  &times;
+                </button>
+              </div>
+
+              <form
+                onSubmit={handleUpdateDelivered}
+                className={styles.modalForm}
+              >
+                <div className={styles.formField}>
+                  <label>Project Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Satyam Apartment"
+                    value={editingDelivered.name}
+                    onChange={(e) =>
+                      setEditingDelivered({
+                        ...editingDelivered,
+                        name: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Location in Patna *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Boring Road, Patna"
+                    value={editingDelivered.location}
+                    onChange={(e) =>
+                      setEditingDelivered({
+                        ...editingDelivered,
+                        location: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Select Project Image Preset</label>
+                  <div className={styles.imagePresetPicker}>
+                    {DELIVERED_PRESET_IMAGES.map((img) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={img.url}
+                        src={img.url}
+                        alt={img.name}
+                        title={img.name}
+                        className={`${styles.presetThumb} ${
+                          editingDelivered.image === img.url
+                            ? styles.presetThumbSelected
+                            : ""
+                        }`}
+                        onClick={() =>
+                          setEditingDelivered({
+                            ...editingDelivered,
+                            image: img.url,
+                          })
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Or Custom Image URL</label>
+                  <input
+                    type="text"
+                    placeholder="/img/delivered/satyam.webp or https://..."
+                    value={editingDelivered.image}
+                    onChange={(e) =>
+                      setEditingDelivered({
+                        ...editingDelivered,
+                        image: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Project Description</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Brief architectural details, amenities and landmark highlights..."
+                    value={editingDelivered.description}
+                    onChange={(e) =>
+                      setEditingDelivered({
+                        ...editingDelivered,
+                        description: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.modalFooter}>
+                  <button
+                    type="button"
+                    className={styles.btnCancel}
+                    onClick={() => setShowEditDeliveredModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className={styles.btnSubmit}>
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL: EDIT ONGOING PROJECT */}
+        {showEditOngoingModal && editingOngoing && (
+          <div
+            className={styles.modalBackdrop}
+            onClick={() => setShowEditOngoingModal(false)}
+          >
+            <div
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.modalHeader}>
+                <div>
+                  <h3 className={styles.modalTitle}>Edit Ongoing Development</h3>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      marginTop: "4px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        background: "rgba(200, 164, 92, 0.15)",
+                        border: "1px solid rgba(200, 164, 92, 0.35)",
+                        color: "#deb360",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Project #{String(editingOngoing.order || 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.72rem",
+                        color: "rgba(255,255,255,0.5)",
+                      }}
+                    >
+                      ID: {editingOngoing.id}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className={styles.modalCloseBtn}
+                  onClick={() => setShowEditOngoingModal(false)}
+                >
+                  &times;
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdateOngoing} className={styles.modalForm}>
+                <div className={styles.formRow}>
+                  <div className={styles.formField}>
+                    <label>Project Title *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Patliputra Royal Crest"
+                      value={editingOngoing.title}
+                      onChange={(e) =>
+                        setEditingOngoing({
+                          ...editingOngoing,
+                          title: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className={styles.formField}>
+                    <label>Configuration Type *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. 3 & 4 BHK Luxury Apartments"
+                      value={editingOngoing.type}
+                      onChange={(e) =>
+                        setEditingOngoing({
+                          ...editingOngoing,
+                          type: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formRow}>
+                  <div className={styles.formField}>
+                    <label>Location *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Bailey Road, Patna"
+                      value={editingOngoing.location}
+                      onChange={(e) =>
+                        setEditingOngoing({
+                          ...editingOngoing,
+                          location: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className={styles.formField}>
+                    <label>Status Tag</label>
+                    <select
+                      value={editingOngoing.tag}
+                      onChange={(e) =>
+                        setEditingOngoing({
+                          ...editingOngoing,
+                          tag: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="Under Construction">
+                        Under Construction
+                      </option>
+                      <option value="Ready To Move In">Ready To Move In</option>
+                      <option value="Ultra Luxury">Ultra Luxury</option>
+                      <option value="Upcoming Launch">Upcoming Launch</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className={styles.formRow}>
+                  <div className={styles.formField}>
+                    <label>Carpet Area</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 1,850 - 2,400 sq.ft."
+                      value={editingOngoing.area}
+                      onChange={(e) =>
+                        setEditingOngoing({
+                          ...editingOngoing,
+                          area: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className={styles.formField}>
+                    <label>Starting Price</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. ₹88 Lakhs*"
+                      value={editingOngoing.price}
+                      onChange={(e) =>
+                        setEditingOngoing({
+                          ...editingOngoing,
+                          price: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formRow}>
+                  <div className={styles.formField}>
+                    <label>Bedrooms (BHK)</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={8}
+                      value={editingOngoing.bedrooms}
+                      onChange={(e) =>
+                        setEditingOngoing({
+                          ...editingOngoing,
+                          bedrooms: Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className={styles.formField}>
+                    <label>Bathrooms</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={8}
+                      value={editingOngoing.bathrooms}
+                      onChange={(e) =>
+                        setEditingOngoing({
+                          ...editingOngoing,
+                          bathrooms: Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.formField}>
+                  <label>RERA Registration Number</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. BRERAP00350-1/2026"
+                    value={editingOngoing.rera}
+                    onChange={(e) =>
+                      setEditingOngoing({
+                        ...editingOngoing,
+                        rera: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Select Project Image Preset</label>
+                  <div className={styles.imagePresetPicker}>
+                    {ONGOING_PRESET_IMAGES.map((img) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={img.url}
+                        src={img.url}
+                        alt={img.name}
+                        title={img.name}
+                        className={`${styles.presetThumb} ${
+                          editingOngoing.image === img.url
+                            ? styles.presetThumbSelected
+                            : ""
+                        }`}
+                        onClick={() =>
+                          setEditingOngoing({
+                            ...editingOngoing,
+                            image: img.url,
+                          })
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Or Custom Image URL</label>
+                  <input
+                    type="text"
+                    placeholder="https://images.unsplash.com/..."
+                    value={editingOngoing.image}
+                    onChange={(e) =>
+                      setEditingOngoing({
+                        ...editingOngoing,
+                        image: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Key Features (comma-separated)</label>
+                  <input
+                    type="text"
+                    placeholder="Italian Marble, Clubhouse Access, Olympic Gym, Solar Common Areas"
+                    value={editingOngoingFeaturesStr}
+                    onChange={(e) =>
+                      setEditingOngoingFeaturesStr(e.target.value)
+                    }
+                  />
+                </div>
+
+                <div className={styles.modalFooter}>
+                  <button
+                    type="button"
+                    className={styles.btnCancel}
+                    onClick={() => setShowEditOngoingModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className={styles.btnSubmit}>
+                    Save Changes
                   </button>
                 </div>
               </form>
