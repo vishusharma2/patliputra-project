@@ -1,112 +1,26 @@
 {
   "delivered": [
     {
-      "id": "delivered-1791374845112",
-      "name": "Test Heritage Tower",
-      "location": "Exhibition Road, Patna",
-      "image": "/img/delivered/nirvana.webp",
-      "description": "An ultra-luxurious development with state of the art finishes."
-    },
-    {
-      "id": "satyam-apartment",
-      "name": "Satyam Apartment",
-      "location": "Boring Road, Patna",
-      "image": "/img/delivered/satyam.webp",
-      "description": "Located on Boring Road, Patna, this ready-to-move project offers premium apartments with Italian marble finishes, power backup, kids' play, yoga zone, green spaces, and 24×7 security."
-    },
-    {
-      "id": "viswamohini-apartment",
-      "name": "Viswamohini Apartment",
+      "id": "delivered-1791395280376",
+      "name": "Patligram",
       "location": "Patna",
-      "image": "/img/delivered/viswamohini.webp",
-      "description": "This premium residential project offers spacious 2 & 3 BHK apartments with modern layouts, quality finishes, and lifestyle amenities, ensuring comfort and convenience in a prime Patna location."
+      "image": "/img/delivered/patligram.webp",
+      "description": "Situated in Kumhrar, Patna, this ready-to-move residential project presents thoughtfully designed 3 BHK flats, each around 1,204 sq ft, priced at approximately ₹70 lakh, offering comfort and modern living."
     },
     {
-      "id": "lalita-apartment",
-      "name": "Lalita Apartment",
-      "location": "Patna",
-      "image": "/img/delivered/lalita.webp",
-      "description": "This premium residential project offers spacious 2 & 3 BHK apartments with modern layouts, quality finishes, and lifestyle amenities, ensuring comfort and convenience in a prime Patna location."
-    },
-    {
-      "id": "maharaja-kameshwar",
+      "id": "delivered-1791395225820",
       "name": "Maharaja Kameshwar Complex",
-      "location": "Fraser Road, Patna",
+      "location": "Patna",
       "image": "/img/delivered/maharaja.webp",
       "description": "Located in the bustling Fraser Road area of Patna, this landmark development features a single tower rising across 6 floors, thoughtfully designed to accommodate 228 modern units."
     },
     {
-      "id": "patliputra-nirvana",
-      "name": "Patliputra Nirvana",
-      "location": "Danapur, Patna",
-      "image": "/img/delivered/nirvana.webp",
-      "description": "An exclusive gated haven in Danapur offering landscaped serenity, clubhouse facilities, dedicated jogging tracks, and world-class architectural finishes."
-    },
-    {
-      "id": "patliputra-exotica",
-      "name": "Patliputra Exotica",
-      "location": "Bailey Road, Patna",
-      "image": "/img/delivered/exotica.webp",
-      "description": "Prestigious high-rise condominium complex with Italian marble lobbies, 3-tier security, and unmatched connectivity along the Bailey Road corridor."
+      "id": "delivered-1791395144822",
+      "name": "Lalita Apartment",
+      "location": "Patna",
+      "image": "/img/delivered/lalita.webp",
+      "description": "This premium residential project offers spacious 2 & 3 BHK apartments with modern layouts, quality finishes, and lifestyle amenities, ensuring comfort and convenience in a prime Patna location."
     }
   ],
-  "ongoing": [
-    {
-      "id": "patliputra-elegance",
-      "type": "3 & 4 BHK",
-      "title": "Patliputra Elegance",
-      "location": "Bailey Road, Near Canal Road, Patna",
-      "area": "1,850 - 2,400 sq.ft.",
-      "price": "₹88 Lakhs*",
-      "bedrooms": 3,
-      "bathrooms": 3,
-      "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80",
-      "tag": "Ready To Move In",
-      "rera": "BRERAP00189-2/2022",
-      "features": [
-        "Italian Marble Flooring",
-        "Double-Height Balcony",
-        "Clubhouse Access",
-        "Vastu Compliant"
-      ]
-    },
-    {
-      "id": "patliputra-green-vista",
-      "type": "2 & 3 BHK",
-      "title": "Patliputra Green Vista",
-      "location": "Saguna More, Danapur Main Road, Patna",
-      "area": "1,350 - 1,920 sq.ft.",
-      "price": "₹68 Lakhs*",
-      "bedrooms": 3,
-      "bathrooms": 2,
-      "image": "https://images.unsplash.com/photo-1567496898669-ee935f5f647a?w=800&q=80",
-      "tag": "Under Construction",
-      "rera": "BRERAP00312-4/2023",
-      "features": [
-        "Rooftop Sky Garden",
-        "Solar Powered Common Areas",
-        "EV Charging Bays",
-        "Olympic Gym"
-      ]
-    },
-    {
-      "id": "patliputra-imperial",
-      "type": "4 BHK",
-      "title": "Patliputra Imperial Heights",
-      "location": "Patliputra Colony, Boring Road Crossing, Patna",
-      "area": "2,750 - 3,500 sq.ft.",
-      "price": "₹1.75 Cr*",
-      "bedrooms": 4,
-      "bathrooms": 4,
-      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
-      "tag": "Ultra Luxury",
-      "rera": "BRERAP00095-1/2021",
-      "features": [
-        "Private Heated Jacuzzi",
-        "Dedicated Servant Suite",
-        "Smart Fingerprint Entry",
-        "3 Reserved Car Parks"
-      ]
-    }
-  ]
+  "ongoing": []
 }

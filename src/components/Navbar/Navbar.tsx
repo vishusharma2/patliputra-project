@@ -54,7 +54,6 @@ export default function Navbar() {
       className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}
       role="banner"
     >
-
       {/* Main Navbar */}
       <nav className={styles.nav} aria-label="Main navigation">
         <Link
@@ -62,7 +61,14 @@ export default function Navbar() {
           className={styles.logo}
           onClick={() => handleLinkClick("/")}
         >
-          <span className={styles.logoIcon}>◈</span>
+          <span className={styles.logoIcon}>
+            <img
+              src="/img/logo_final.png"
+              alt="logo"
+              height={"50px"}
+              width={"50px"}
+            />
+          </span>
           <div className={styles.logoText}>
             <span className={styles.logoName}>PATLIPUTRA</span>
             <span className={styles.logoSub}>GROUP &bull; BIHAR</span>

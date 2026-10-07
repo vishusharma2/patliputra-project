@@ -1,171 +1,686 @@
-.about {
-  padding: var(--space-24) 0;
-  background: var(--color-white);
+/* ==========================================================================
+   PATLIPUTRA GROUP - ABOUT COMPONENT STYLES
+   High-end luxury real-estate styling matching brand identity
+   ========================================================================== */
+
+.aboutSection {
+  background: #fbfbfd;
+  color: #1a1a2e;
+  overflow: hidden;
+  position: relative;
 }
 
-.wrapper {
+/* --------------------------------------------------------------------------
+   SECTION 1: AT PATLIPUTRA GROUP
+   -------------------------------------------------------------------------- */
+.introBlock {
+  padding: 5.5rem 0 4rem;
+  position: relative;
+}
+
+.introGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-16);
+  grid-template-columns: 1.15fr 0.95fr;
+  gap: 3.5rem;
   align-items: center;
 }
 
-.imageCol {
-  position: relative;
-}
-
-.imageGrid {
-  position: relative;
-}
-
-.imgMain {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-xl);
-}
-
-.imgMain img {
-  width: 100%;
-  height: 400px;
-  object-fit: cover;
-  transition: transform var(--transition-slow);
-}
-
-.imgMain:hover img {
-  transform: scale(1.05);
-}
-
-.imgAccent {
-  position: absolute;
-  bottom: -40px;
-  right: -30px;
-  width: 55%;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-xl);
-  border: 5px solid var(--color-white);
-}
-
-.imgAccent img {
-  width: 100%;
-  height: 240px;
-  object-fit: cover;
-  transition: transform var(--transition-slow);
-}
-
-.imgAccent:hover img {
-  transform: scale(1.05);
-}
-
-.experience {
-  position: absolute;
-  top: -20px;
-  left: -20px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-  color: var(--color-white);
-  padding: var(--space-6);
-  border-radius: var(--radius-lg);
+.introContent {
   display: flex;
   flex-direction: column;
+}
+
+.sectionEyebrow {
+  display: inline-flex;
   align-items: center;
-  text-align: center;
-  box-shadow: var(--shadow-gold);
-  animation: pulse-glow 3s infinite;
-}
-
-.expNumber {
-  font-family: var(--font-heading);
-  font-size: var(--text-3xl);
+  gap: 8px;
+  font-family: var(--font-display, "Outfit", sans-serif);
+  font-size: 0.78rem;
   font-weight: 700;
-  line-height: 1;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #a8843c;
+  margin-bottom: 0.75rem;
 }
 
-.expText {
-  font-family: var(--font-display);
-  font-size: var(--text-xs);
+.eyebrowLine {
+  width: 24px;
+  height: 2px;
+  background: #c8a45c;
+}
+
+.mainHeading {
+  font-family: var(--font-heading, "Playfair Display", serif);
+  font-size: clamp(2.2rem, 3.2vw, 3rem);
+  font-weight: 700;
+  color: #0f101b;
+  line-height: 1.2;
+  margin: 0 0 1rem 0;
+  position: relative;
+}
+
+.headingUnderline {
+  width: 70px;
+  height: 3px;
+  background: linear-gradient(90deg, #c8a45c, #e8c97a);
+  border-radius: 2px;
+  margin-bottom: 1.85rem;
+}
+
+.introParagraph {
+  font-family: var(--font-body, "Inter", sans-serif);
+  font-size: 1.02rem;
+  line-height: 1.85;
+  color: #4a4d61;
+  margin: 0 0 1.35rem 0;
+}
+
+.introParagraph strong {
+  color: #111322;
+  font-weight: 600;
+}
+
+/* Image Showcase Column */
+.introMediaWrap {
+  position: relative;
+}
+
+.mediaFrame {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0f101b;
+  box-shadow:
+    0 24px 50px rgba(15, 16, 27, 0.16),
+    0 4px 16px rgba(200, 164, 92, 0.15);
+  border: 4px solid #ffffff;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.5s ease;
+}
+
+.mediaFrame:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 32px 65px rgba(15, 16, 27, 0.22),
+    0 8px 24px rgba(200, 164, 92, 0.28);
+}
+
+.introImage {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s ease;
+}
+
+.mediaFrame:hover .introImage {
+  transform: scale(1.04);
+}
+
+.mediaBadge {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  background: rgba(15, 16, 27, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-left: 3px solid #deb360;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+}
+
+.badgeTitle {
+  font-family: var(--font-heading, "Playfair Display", serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.badgeTag {
+  font-family: var(--font-display, "Outfit", sans-serif);
+  font-size: 0.7rem;
+  font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  margin-top: var(--space-1);
-  opacity: 0.9;
+  color: #deb360;
 }
 
-.textCol {
-  padding-left: var(--space-8);
+/* Stat strip */
+.statsStrip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 3.5rem;
+  padding: 2rem 2.5rem;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(15, 16, 27, 0.06);
+  border: 1px solid rgba(200, 164, 92, 0.22);
 }
 
-.description {
-  font-size: var(--text-base);
-  color: var(--color-text-muted);
-  line-height: 1.8;
-  margin-bottom: var(--space-4);
+.statItem {
+  text-align: center;
+  position: relative;
 }
 
-.highlights {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  margin: var(--space-8) 0;
+.statItem:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: -0.75rem;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background: rgba(200, 164, 92, 0.25);
 }
 
-.highlight {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-4);
+.statNum {
+  font-family: var(--font-heading, "Playfair Display", serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: #a8843c;
+  line-height: 1.1;
+  margin-bottom: 0.35rem;
 }
 
-.highlightIcon {
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  background: rgba(200, 164, 92, 0.1);
+.statLabel {
+  font-family: var(--font-display, "Outfit", sans-serif);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #55586d;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   ARCHITECTURAL SOUNDWAVE DIVIDER
+   -------------------------------------------------------------------------- */
+.waveformDivider {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary);
+  padding: 2.5rem 0;
+  overflow: hidden;
 }
 
-.highlight strong {
-  font-family: var(--font-display);
-  font-size: var(--text-base);
-  color: var(--color-text);
+.waveformBars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  opacity: 0.35;
+}
+
+.bar {
+  width: 2.5px;
+  background: #c8a45c;
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 2: CMD MESSAGE
+   -------------------------------------------------------------------------- */
+.cmdSection {
+  padding: 4.5rem 0;
+  background: linear-gradient(180deg, #fbfbfd 0%, #f4f4f8 100%);
+  position: relative;
+}
+
+.cmdCard {
+  background: #ffffff;
+  border: 1px solid rgba(200, 164, 92, 0.3);
+  border-radius: 20px;
+  padding: 3.5rem;
+  box-shadow: 0 16px 45px rgba(15, 16, 27, 0.08);
+  position: relative;
+}
+
+.cmdCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #a8843c 0%, #deb360 50%, #c8a45c 100%);
+  border-radius: 20px 20px 0 0;
+}
+
+.cmdGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.85fr;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+.cmdLeft {
+  display: flex;
+  flex-direction: column;
+}
+
+.cmdEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display, "Outfit", sans-serif);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #a8843c;
+  margin-bottom: 0.4rem;
+}
+
+.cmdHeading {
+  font-family: var(--font-heading, "Playfair Display", serif);
+  font-size: 2.3rem;
+  font-weight: 700;
+  color: #0f101b;
+  margin: 0 0 1.5rem 0;
+}
+
+.cmdQuoteBlock {
+  position: relative;
+  background: rgba(200, 164, 92, 0.08);
+  border-left: 3px solid #c8a45c;
+  border-radius: 0 10px 10px 0;
+  padding: 1.15rem 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.cmdQuoteText {
+  font-family: var(--font-heading, "Playfair Display", serif);
+  font-size: 1.08rem;
+  font-style: italic;
+  line-height: 1.65;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.cmdParagraph {
+  font-family: var(--font-body, "Inter", sans-serif);
+  font-size: 0.98rem;
+  line-height: 1.85;
+  color: #4a4d61;
+  margin: 0 0 1.25rem 0;
+}
+
+.cmdSignoffWrap {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(200, 164, 92, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.cmdSignText {
+  font-family: var(--font-heading, "Playfair Display", serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #a8843c;
+}
+
+.cmdOfficialTitle {
+  font-family: var(--font-display, "Outfit", sans-serif);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  color: #636780;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* Right CMD Photo Frame */
+.cmdPhotoWrap {
+  position: relative;
+  display: flex;
+  justifyContent: center;
+}
+
+.cmdPhotoContainer {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0f101b;
+  box-shadow:
+    0 24px 50px rgba(0, 0, 0, 0.18),
+    0 0 30px rgba(200, 164, 92, 0.15);
+  border: 4px solid #ffffff;
+}
+
+.cmdPhoto {
+  width: 100%;
+  height: 480px;
+  object-fit: cover;
+  object-position: center top;
   display: block;
-  margin-bottom: 2px;
 }
 
-.highlight p {
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-  line-height: 1.5;
+.cmdPhotoCaption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(0deg, rgba(15, 16, 27, 0.95) 0%, rgba(15, 16, 27, 0.6) 70%, transparent 100%);
+  padding: 1.5rem 1.25rem 1.15rem;
+  color: #ffffff;
+  text-align: center;
 }
 
+.cmdCaptionName {
+  font-family: var(--font-heading, "Playfair Display", serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.cmdCaptionRole {
+  font-family: var(--font-display, "Outfit", sans-serif);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #deb360;
+  margin-top: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 3: STRATEGIC PILLARS (VISION, MISSION, CORE VALUES)
+   -------------------------------------------------------------------------- */
+.pillarsSection {
+  padding: 5.5rem 0 6.5rem;
+  background: #ffffff;
+}
+
+.pillarsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+/* Pillar Card */
+.pillarCard {
+  background: #fbfbfd;
+  border: 1px solid rgba(26, 26, 46, 0.08);
+  border-radius: 16px;
+  padding: 2.75rem 3rem;
+  box-shadow: 0 10px 30px rgba(15, 16, 27, 0.04);
+  transition: all 0.35s ease;
+  position: relative;
+}
+
+.pillarCard:hover {
+  border-color: rgba(200, 164, 92, 0.4);
+  box-shadow: 0 18px 40px rgba(15, 16, 27, 0.08);
+  transform: translateY(-3px);
+}
+
+.pillarHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pillarIconWrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(200, 164, 92, 0.12);
+  border: 1px solid rgba(200, 164, 92, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a8843c;
+  flex-shrink: 0;
+}
+
+.pillarTitle {
+  font-family: var(--font-heading, "Playfair Display", serif);
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #0f101b;
+  margin: 0;
+}
+
+.visionText {
+  font-family: var(--font-body, "Inter", sans-serif);
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: #4a4d61;
+  margin: 0;
+}
+
+/* Mission List */
+.missionList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.15rem 2rem;
+}
+
+.missionItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  font-family: var(--font-body, "Inter", sans-serif);
+  font-size: 0.96rem;
+  line-height: 1.7;
+  color: #4a4d61;
+}
+
+.bulletMark {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(200, 164, 92, 0.15);
+  color: #a8843c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+/* Core Values Grid */
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.valueItemCard {
+  background: #ffffff;
+  border: 1px solid rgba(200, 164, 92, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.valueItemCard:hover {
+  border-color: #c8a45c;
+  box-shadow: 0 10px 24px rgba(200, 164, 92, 0.12);
+  transform: translateY(-2px);
+}
+
+.valueHeading {
+  font-family: var(--font-heading, "Playfair Display", serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #a8843c;
+  margin: 0 0 0.4rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.valueDesc {
+  font-family: var(--font-body, "Inter", sans-serif);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: #55586d;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   BOTTOM EXECUTIVE CTA BAR
+   -------------------------------------------------------------------------- */
+.bottomCtaBanner {
+  background: linear-gradient(135deg, #0f101b 0%, #1a1b2e 100%);
+  border: 1px solid rgba(200, 164, 92, 0.3);
+  border-radius: 16px;
+  padding: 2.5rem 3rem;
+  margin-top: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  color: #ffffff;
+}
+
+.ctaHeading {
+  font-family: var(--font-heading, "Playfair Display", serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.35rem 0;
+}
+
+.ctaSub {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.ctaButtonGroup {
+  display: flex;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.ctaPrimaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #deb360 0%, #c8a45c 100%);
+  color: #0f101b;
+  font-family: var(--font-display, "Outfit", sans-serif);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 0.8rem 1.6rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(200, 164, 92, 0.35);
+}
+
+.ctaPrimaryBtn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 8px 24px rgba(200, 164, 92, 0.45);
+}
+
+.ctaSecondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-family: var(--font-display, "Outfit", sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.8rem 1.4rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.ctaSecondaryBtn:hover {
+  background: rgba(200, 164, 92, 0.15);
+  border-color: #c8a45c;
+  color: #deb360;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE QUERIES
+   -------------------------------------------------------------------------- */
 @media (max-width: 1024px) {
-  .wrapper {
+  .introGrid,
+  .cmdGrid {
     grid-template-columns: 1fr;
-    gap: var(--space-12);
+    gap: 2.5rem;
   }
 
-  .textCol {
-    padding-left: 0;
+  .cmdCard {
+    padding: 2.5rem;
   }
 
-  .imgAccent {
-    bottom: -20px;
-    right: 0;
+  .missionList {
+    grid-template-columns: 1fr;
+  }
+
+  .statsStrip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .statItem:nth-child(2)::after {
+    display: none;
+  }
+
+  .bottomCtaBanner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .ctaButtonGroup {
+    width: 100%;
+    justify-content: center;
   }
 }
 
 @media (max-width: 640px) {
-  .about {
-    padding: var(--space-16) 0;
+  .introBlock,
+  .cmdSection,
+  .pillarsSection {
+    padding: 3.5rem 0;
   }
 
-  .imgAccent {
-    position: relative;
-    bottom: auto;
-    right: auto;
+  .pillarCard {
+    padding: 1.75rem 1.5rem;
+  }
+
+  .cmdCard {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .statsStrip {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+
+  .statItem::after {
+    display: none !important;
+  }
+
+  .ctaButtonGroup {
+    flex-direction: column;
     width: 100%;
-    margin-top: var(--space-4);
-    border: none;
+  }
+
+  .ctaPrimaryBtn,
+  .ctaSecondaryBtn {
+    justify-content: center;
   }
 }

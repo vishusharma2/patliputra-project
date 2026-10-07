@@ -48,11 +48,26 @@ const DELIVERED_PRESET_IMAGES = [
 ];
 
 const ONGOING_PRESET_IMAGES = [
-  { name: "Luxury High-Rise Tower", url: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80" },
-  { name: "Modern Glass Facade", url: "https://images.unsplash.com/photo-1567496898669-ee935f5f647a?w=800&q=80" },
-  { name: "Executive Villa & Penthouse", url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" },
-  { name: "Skyline Residences", url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80" },
-  { name: "Contemporary Green Living", url: "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&q=80" },
+  {
+    name: "Luxury High-Rise Tower",
+    url: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80",
+  },
+  {
+    name: "Modern Glass Facade",
+    url: "https://images.unsplash.com/photo-1567496898669-ee935f5f647a?w=800&q=80",
+  },
+  {
+    name: "Executive Villa & Penthouse",
+    url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
+  },
+  {
+    name: "Skyline Residences",
+    url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80",
+  },
+  {
+    name: "Contemporary Green Living",
+    url: "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&q=80",
+  },
 ];
 
 export default function PatliputraLoginPage() {
@@ -69,12 +84,14 @@ export default function PatliputraLoginPage() {
   const [showForgotModal, setShowForgotModal] = useState(false);
 
   // Project Management State
-  const [activeTab, setActiveTab] = useState<"delivered" | "ongoing" | "overview">("delivered");
-  const [deliveredProjects, setDeliveredProjects] = useState<DeliveredProject[]>(
-    initialData.delivered || []
-  );
+  const [activeTab, setActiveTab] = useState<
+    "delivered" | "ongoing" | "overview"
+  >("delivered");
+  const [deliveredProjects, setDeliveredProjects] = useState<
+    DeliveredProject[]
+  >(initialData.delivered || []);
   const [ongoingProjects, setOngoingProjects] = useState<OngoingProject[]>(
-    initialData.ongoing || []
+    initialData.ongoing || [],
   );
 
   // Modals for Adding Projects
@@ -102,12 +119,14 @@ export default function PatliputraLoginPage() {
     image: ONGOING_PRESET_IMAGES[0].url,
     tag: "Under Construction",
     rera: "BRERAP00" + Math.floor(100 + Math.random() * 900) + "-1/2026",
-    features: "Clubhouse Access, 24/7 Multi-Tier Security, High Speed Elevators, 100% Power Backup",
+    features:
+      "Clubhouse Access, 24/7 Multi-Tier Security, High Speed Elevators, 100% Power Backup",
   });
 
   // Check saved session on mount & set document title
   useEffect(() => {
-    document.title = "Executive Security Gateway & Project Management | Patliputra Group";
+    document.title =
+      "Executive Security Gateway & Project Management | Patliputra Group";
     try {
       const savedSession = localStorage.getItem("patliputra_admin_session");
       if (savedSession === "active") {
@@ -125,11 +144,14 @@ export default function PatliputraLoginPage() {
         .then((res) => res.json())
         .then((data) => {
           if (data) {
-            if (Array.isArray(data.delivered)) setDeliveredProjects(data.delivered);
+            if (Array.isArray(data.delivered))
+              setDeliveredProjects(data.delivered);
             if (Array.isArray(data.ongoing)) setOngoingProjects(data.ongoing);
           }
         })
-        .catch((err) => console.error("Error fetching projects in admin console:", err));
+        .catch((err) =>
+          console.error("Error fetching projects in admin console:", err),
+        );
     }
   }, [isAuthenticated]);
 
@@ -189,10 +211,12 @@ export default function PatliputraLoginPage() {
         } catch {
           // ignore storage errs
         }
-        setToastMessage("Security handshake verified. Welcome, Executive Director.");
+        setToastMessage(
+          "Security handshake verified. Welcome, Executive Director.",
+        );
       } else {
         setErrorMessage(
-          "Access Denied: Invalid administrator credentials or unverified terminal."
+          "Access Denied: Invalid administrator credentials or unverified terminal.",
         );
         triggerShake();
       }
@@ -251,7 +275,9 @@ export default function PatliputraLoginPage() {
           image: "/img/delivered/satyam.webp",
           description: "",
         });
-        setToastMessage(`✓ Delivered project "${newDelivered.name}" published successfully!`);
+        setToastMessage(
+          `✓ Delivered project "${newDelivered.name}" published successfully!`,
+        );
       } else {
         alert(data.error || "Failed to add delivered project");
       }
@@ -269,14 +295,19 @@ export default function PatliputraLoginPage() {
     if (!id) return;
 
     try {
-      const res = await fetch(`/api/admin/projects?category=delivered&id=${encodeURIComponent(id)}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/admin/projects?category=delivered&id=${encodeURIComponent(id)}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       const data = await res.json();
       if (res.ok && data.success) {
         setDeliveredProjects(data.data.delivered);
-        setToastMessage(`✓ Delivered project "${name || id}" removed successfully.`);
+        setToastMessage(
+          `✓ Delivered project "${name || id}" removed successfully.`,
+        );
       } else {
         alert(data.error || "Failed to remove project");
       }
@@ -317,7 +348,10 @@ export default function PatliputraLoginPage() {
             image: newOngoing.image || ONGOING_PRESET_IMAGES[0].url,
             tag: newOngoing.tag || "Under Construction",
             rera: newOngoing.rera.trim() || "BRERAP00-PENDING",
-            features: featureList.length > 0 ? featureList : ["Clubhouse Access", "24/7 Security", "Power Backup"],
+            features:
+              featureList.length > 0
+                ? featureList
+                : ["Clubhouse Access", "24/7 Security", "Power Backup"],
           },
         }),
       });
@@ -337,9 +371,12 @@ export default function PatliputraLoginPage() {
           image: ONGOING_PRESET_IMAGES[0].url,
           tag: "Under Construction",
           rera: "BRERAP00" + Math.floor(100 + Math.random() * 900) + "-1/2026",
-          features: "Clubhouse Access, 24/7 Multi-Tier Security, High Speed Elevators, 100% Power Backup",
+          features:
+            "Clubhouse Access, 24/7 Multi-Tier Security, High Speed Elevators, 100% Power Backup",
         });
-        setToastMessage(`✓ Ongoing project "${newOngoing.title}" published successfully!`);
+        setToastMessage(
+          `✓ Ongoing project "${newOngoing.title}" published successfully!`,
+        );
       } else {
         alert(data.error || "Failed to add ongoing project");
       }
@@ -352,9 +389,12 @@ export default function PatliputraLoginPage() {
   // Delete Ongoing Project Handler
   const handleDeleteOngoing = async (id: string, title: string) => {
     try {
-      const res = await fetch(`/api/admin/projects?category=ongoing&id=${encodeURIComponent(id)}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/admin/projects?category=ongoing&id=${encodeURIComponent(id)}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       const data = await res.json();
       if (res.ok && data.success) {
@@ -383,7 +423,14 @@ export default function PatliputraLoginPage() {
       <header className={styles.topNav}>
         <Link href="/" className={styles.brandLink}>
           <div className={styles.monogramWrap}>
-            <span className={styles.monogram}>◈</span>
+            <span className={styles.monogram}>
+              <img
+                src="/img/logo_final.png"
+                alt="logo"
+                height={"50px"}
+                width={"50px"}
+              />
+            </span>
           </div>
           <div className={styles.brandTitleGroup}>
             <span className={styles.brandTitle}>PATLIPUTRA</span>
@@ -405,7 +452,9 @@ export default function PatliputraLoginPage() {
       <main className={styles.mainContainer}>
         {!isAuthenticated ? (
           /* ================= LOGIN FORM ================= */
-          <div className={`${styles.loginCard} ${isShaking ? styles.shakeCard : ""}`}>
+          <div
+            className={`${styles.loginCard} ${isShaking ? styles.shakeCard : ""}`}
+          >
             <div className={styles.cardTopBar} />
 
             <div className={styles.cardHeader}>
@@ -426,13 +475,17 @@ export default function PatliputraLoginPage() {
               </div>
               <h1 className={styles.cardHeading}>Admin Authentication</h1>
               <p className={styles.cardDesc}>
-                Enter authorized credentials to manage Delivered &amp; Ongoing projects
+                Enter authorized credentials to manage Delivered &amp; Ongoing
+                projects
               </p>
             </div>
 
             {/* Error Notification */}
             {errorMessage && (
-              <div className={`${styles.alertBox} ${styles.alertBoxError}`} role="alert">
+              <div
+                className={`${styles.alertBox} ${styles.alertBoxError}`}
+                role="alert"
+              >
                 <svg
                   width="18"
                   height="18"
@@ -498,7 +551,9 @@ export default function PatliputraLoginPage() {
                 <div className={styles.inputLabel}>
                   <span>Security Key</span>
                   {capsLockActive && (
-                    <span className={styles.capsIndicator}>⚠️ Caps Lock ON</span>
+                    <span className={styles.capsIndicator}>
+                      ⚠️ Caps Lock ON
+                    </span>
                   )}
                 </div>
                 <div className={styles.inputFieldWrapper}>
@@ -532,7 +587,9 @@ export default function PatliputraLoginPage() {
                     type="button"
                     className={styles.eyeToggleBtn}
                     onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? "Hide security key" : "Show security key"}
+                    aria-label={
+                      showPassword ? "Hide security key" : "Show security key"
+                    }
                     tabIndex={-1}
                   >
                     {showPassword ? (
@@ -659,20 +716,47 @@ export default function PatliputraLoginPage() {
             {/* Top Dashboard Header */}
             <div className={styles.dashboardHeader}>
               <div className={styles.dashHeaderInfo}>
-                <div className={styles.adminAvatar}>◈</div>
+                <div className={styles.adminAvatar}>
+                  <img
+                    src="/img/logo_final.png"
+                    alt="logo"
+                    height={"50px"}
+                    width={"50px"}
+                  />
+                </div>
                 <div>
-                  <h1 className={styles.dashHeaderTitle}>Executive Project Management Console</h1>
+                  <h1 className={styles.dashHeaderTitle}>
+                    Executive Project Management Console
+                  </h1>
                   <div className={styles.dashHeaderMeta}>
-                    <span>Authenticated: <strong>Director Level</strong></span>
+                    <span>
+                      Authenticated: <strong>Director Level</strong>
+                    </span>
                     <span>&bull;</span>
-                    <span>Status: <strong style={{ color: "#2ecc71" }}>Live Sync Active</strong></span>
+                    <span>
+                      Status:{" "}
+                      <strong style={{ color: "#2ecc71" }}>
+                        Live Sync Active
+                      </strong>
+                    </span>
                   </div>
                 </div>
               </div>
 
               <div className={styles.dashHeaderActions}>
-                <Link href="/properties" className={styles.btnSecondary} target="_blank">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <Link
+                  href="/properties"
+                  className={styles.btnSecondary}
+                  target="_blank"
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                     <polyline points="15 3 21 3 21 9" />
                     <line x1="10" y1="14" x2="21" y2="3" />
@@ -700,7 +784,9 @@ export default function PatliputraLoginPage() {
                 onClick={() => setActiveTab("delivered")}
               >
                 <span>Delivered Projects</span>
-                <span className={styles.tabCountBadge}>{deliveredProjects.length}</span>
+                <span className={styles.tabCountBadge}>
+                  {deliveredProjects.length}
+                </span>
               </button>
 
               <button
@@ -711,7 +797,9 @@ export default function PatliputraLoginPage() {
                 onClick={() => setActiveTab("ongoing")}
               >
                 <span>Ongoing Developments</span>
-                <span className={styles.tabCountBadge}>{ongoingProjects.length}</span>
+                <span className={styles.tabCountBadge}>
+                  {ongoingProjects.length}
+                </span>
               </button>
 
               <button
@@ -731,14 +819,23 @@ export default function PatliputraLoginPage() {
                 <div className={styles.toolbarRow}>
                   <div className={styles.toolbarTitle}>
                     <span>Delivered Projects Directory</span>
-                    <span className={styles.tabCountBadge}>{deliveredProjects.length} Total</span>
+                    <span className={styles.tabCountBadge}>
+                      {deliveredProjects.length} Total
+                    </span>
                   </div>
                   <button
                     type="button"
                     className={styles.addProjectBtn}
                     onClick={() => setShowAddDeliveredModal(true)}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    >
                       <line x1="12" y1="5" x2="12" y2="19" />
                       <line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
@@ -748,7 +845,10 @@ export default function PatliputraLoginPage() {
 
                 <div className={styles.projectsGrid}>
                   {deliveredProjects.map((p, index) => (
-                    <div key={p.id || `${p.name}-${index}`} className={styles.projectCard}>
+                    <div
+                      key={p.id || `${p.name}-${index}`}
+                      className={styles.projectCard}
+                    >
                       <div className={styles.cardMedia}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={p.image} alt={p.name} loading="lazy" />
@@ -757,7 +857,14 @@ export default function PatliputraLoginPage() {
                       <div className={styles.cardBody}>
                         <h3 className={styles.cardTitle}>{p.name}</h3>
                         <div className={styles.cardLocation}>
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                          <svg
+                            width="13"
+                            height="13"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                          >
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                             <circle cx="12" cy="10" r="3" />
                           </svg>
@@ -765,7 +872,12 @@ export default function PatliputraLoginPage() {
                         </div>
                         <p className={styles.cardDescText}>{p.description}</p>
                         <div className={styles.cardFooterAction}>
-                          <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.4)" }}>
+                          <span
+                            style={{
+                              fontSize: "0.72rem",
+                              color: "rgba(255,255,255,0.4)",
+                            }}
+                          >
                             ID: {p.id || "legacy"}
                           </span>
                           {confirmDeleteId === p.id ? (
@@ -794,7 +906,14 @@ export default function PatliputraLoginPage() {
                               className={styles.deleteCardBtn}
                               onClick={() => setConfirmDeleteId(p.id || null)}
                             >
-                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <svg
+                                width="13"
+                                height="13"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
                                 <polyline points="3 6 5 6 21 6" />
                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                               </svg>
@@ -815,14 +934,23 @@ export default function PatliputraLoginPage() {
                 <div className={styles.toolbarRow}>
                   <div className={styles.toolbarTitle}>
                     <span>Ongoing Developments Directory</span>
-                    <span className={styles.tabCountBadge}>{ongoingProjects.length} Active</span>
+                    <span className={styles.tabCountBadge}>
+                      {ongoingProjects.length} Active
+                    </span>
                   </div>
                   <button
                     type="button"
                     className={styles.addProjectBtn}
                     onClick={() => setShowAddOngoingModal(true)}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    >
                       <line x1="12" y1="5" x2="12" y2="19" />
                       <line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
@@ -836,20 +964,48 @@ export default function PatliputraLoginPage() {
                       <div className={styles.cardMedia}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={p.image} alt={p.title} loading="lazy" />
-                        <span className={styles.cardStatusPill}>{p.tag || "Ongoing"}</span>
+                        <span className={styles.cardStatusPill}>
+                          {p.tag || "Ongoing"}
+                        </span>
                       </div>
                       <div className={styles.cardBody}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-                          <span style={{ fontSize: "0.74rem", fontWeight: 700, color: "#deb360", letterSpacing: "1px" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: "4px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: "0.74rem",
+                              fontWeight: 700,
+                              color: "#deb360",
+                              letterSpacing: "1px",
+                            }}
+                          >
                             {p.type}
                           </span>
-                          <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.5)" }}>
+                          <span
+                            style={{
+                              fontSize: "0.7rem",
+                              color: "rgba(255,255,255,0.5)",
+                            }}
+                          >
                             {p.rera}
                           </span>
                         </div>
                         <h3 className={styles.cardTitle}>{p.title}</h3>
                         <div className={styles.cardLocation}>
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                          <svg
+                            width="13"
+                            height="13"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                          >
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                             <circle cx="12" cy="10" r="3" />
                           </svg>
@@ -857,14 +1013,27 @@ export default function PatliputraLoginPage() {
                         </div>
 
                         <div className={styles.cardSpecsRow}>
-                          <span>Area: <strong>{p.area}</strong></span>
-                          <span>BHK: <strong>{p.bedrooms}</strong></span>
-                          <span>Baths: <strong>{p.bathrooms}</strong></span>
-                          <span>Price: <strong>{p.price}</strong></span>
+                          <span>
+                            Area: <strong>{p.area}</strong>
+                          </span>
+                          <span>
+                            BHK: <strong>{p.bedrooms}</strong>
+                          </span>
+                          <span>
+                            Baths: <strong>{p.bathrooms}</strong>
+                          </span>
+                          <span>
+                            Price: <strong>{p.price}</strong>
+                          </span>
                         </div>
 
                         <div className={styles.cardFooterAction}>
-                          <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.4)" }}>
+                          <span
+                            style={{
+                              fontSize: "0.72rem",
+                              color: "rgba(255,255,255,0.4)",
+                            }}
+                          >
                             ID: {p.id}
                           </span>
                           {confirmDeleteId === p.id ? (
@@ -893,7 +1062,14 @@ export default function PatliputraLoginPage() {
                               className={styles.deleteCardBtn}
                               onClick={() => setConfirmDeleteId(p.id)}
                             >
-                              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <svg
+                                width="13"
+                                height="13"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
                                 <polyline points="3 6 5 6 21 6" />
                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                               </svg>
@@ -910,39 +1086,79 @@ export default function PatliputraLoginPage() {
 
             {/* TAB 3: OVERVIEW & AUDIT */}
             {activeTab === "overview" && (
-              <div className={styles.dashboardCard} style={{ maxWidth: "100%", textAlign: "left" }}>
-                <div className={styles.verifiedBadge} style={{ margin: "0 0 1rem 0" }}>
-                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <div
+                className={styles.dashboardCard}
+                style={{ maxWidth: "100%", textAlign: "left" }}
+              >
+                <div
+                  className={styles.verifiedBadge}
+                  style={{ margin: "0 0 1rem 0" }}
+                >
+                  <svg
+                    width="34"
+                    height="34"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                  >
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                     <polyline points="22 4 12 14.01 9 11.01" />
                   </svg>
                 </div>
-                <h2 className={styles.cardHeading} style={{ textAlign: "left" }}>Portfolio Health &amp; Audit Status</h2>
-                <p className={styles.cardDesc} style={{ textAlign: "left", marginBottom: "2rem" }}>
-                  Real-time synchronization between executive internal storage and public client displays.
+                <h2
+                  className={styles.cardHeading}
+                  style={{ textAlign: "left" }}
+                >
+                  Portfolio Health &amp; Audit Status
+                </h2>
+                <p
+                  className={styles.cardDesc}
+                  style={{ textAlign: "left", marginBottom: "2rem" }}
+                >
+                  Real-time synchronization between executive internal storage
+                  and public client displays.
                 </p>
 
                 <div className={styles.statsGrid}>
                   <div className={styles.statItem}>
-                    <div className={styles.statValue}>{deliveredProjects.length}</div>
-                    <div className={styles.statLabel}>Completed &amp; Delivered Projects</div>
+                    <div className={styles.statValue}>
+                      {deliveredProjects.length}
+                    </div>
+                    <div className={styles.statLabel}>
+                      Completed &amp; Delivered Projects
+                    </div>
                   </div>
                   <div className={styles.statItem}>
-                    <div className={styles.statValue}>{ongoingProjects.length}</div>
-                    <div className={styles.statLabel}>Active Ongoing Landmarks</div>
+                    <div className={styles.statValue}>
+                      {ongoingProjects.length}
+                    </div>
+                    <div className={styles.statLabel}>
+                      Active Ongoing Landmarks
+                    </div>
                   </div>
                   <div className={styles.statItem}>
                     <div className={styles.statValue}>100%</div>
-                    <div className={styles.statLabel}>RERA Bihar Filing Compliance</div>
+                    <div className={styles.statLabel}>
+                      RERA Bihar Filing Compliance
+                    </div>
                   </div>
                   <div className={styles.statItem}>
                     <div className={styles.statValue}>35+ Years</div>
-                    <div className={styles.statLabel}>Patliputra Group Proven Legacy (Since 1989)</div>
+                    <div className={styles.statLabel}>
+                      Patliputra Group Proven Legacy (Since 1989)
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ marginTop: "2rem", display: "flex", gap: "1rem" }}>
-                  <Link href="/properties" className={styles.submitBtn} style={{ maxWidth: "300px", textDecoration: "none" }}>
+                <div
+                  style={{ marginTop: "2rem", display: "flex", gap: "1rem" }}
+                >
+                  <Link
+                    href="/properties"
+                    className={styles.submitBtn}
+                    style={{ maxWidth: "300px", textDecoration: "none" }}
+                  >
                     View Live Website View
                   </Link>
                 </div>
@@ -953,8 +1169,14 @@ export default function PatliputraLoginPage() {
 
         {/* MODAL: ADD DELIVERED PROJECT */}
         {showAddDeliveredModal && (
-          <div className={styles.modalBackdrop} onClick={() => setShowAddDeliveredModal(false)}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={styles.modalBackdrop}
+            onClick={() => setShowAddDeliveredModal(false)}
+          >
+            <div
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className={styles.modalHeader}>
                 <h3 className={styles.modalTitle}>Add Delivered Project</h3>
                 <button
@@ -966,7 +1188,10 @@ export default function PatliputraLoginPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleCreateDelivered} className={styles.modalForm}>
+              <form
+                onSubmit={handleCreateDelivered}
+                className={styles.modalForm}
+              >
                 <div className={styles.formField}>
                   <label>Project Name *</label>
                   <input
@@ -974,7 +1199,9 @@ export default function PatliputraLoginPage() {
                     required
                     placeholder="e.g. Satyam Apartment"
                     value={newDelivered.name}
-                    onChange={(e) => setNewDelivered({ ...newDelivered, name: e.target.value })}
+                    onChange={(e) =>
+                      setNewDelivered({ ...newDelivered, name: e.target.value })
+                    }
                   />
                 </div>
 
@@ -985,7 +1212,12 @@ export default function PatliputraLoginPage() {
                     required
                     placeholder="e.g. Boring Road, Patna"
                     value={newDelivered.location}
-                    onChange={(e) => setNewDelivered({ ...newDelivered, location: e.target.value })}
+                    onChange={(e) =>
+                      setNewDelivered({
+                        ...newDelivered,
+                        location: e.target.value,
+                      })
+                    }
                   />
                 </div>
 
@@ -1000,9 +1232,13 @@ export default function PatliputraLoginPage() {
                         alt={img.name}
                         title={img.name}
                         className={`${styles.presetThumb} ${
-                          newDelivered.image === img.url ? styles.presetThumbSelected : ""
+                          newDelivered.image === img.url
+                            ? styles.presetThumbSelected
+                            : ""
                         }`}
-                        onClick={() => setNewDelivered({ ...newDelivered, image: img.url })}
+                        onClick={() =>
+                          setNewDelivered({ ...newDelivered, image: img.url })
+                        }
                       />
                     ))}
                   </div>
@@ -1014,7 +1250,12 @@ export default function PatliputraLoginPage() {
                     type="text"
                     placeholder="/img/delivered/satyam.webp or https://..."
                     value={newDelivered.image}
-                    onChange={(e) => setNewDelivered({ ...newDelivered, image: e.target.value })}
+                    onChange={(e) =>
+                      setNewDelivered({
+                        ...newDelivered,
+                        image: e.target.value,
+                      })
+                    }
                   />
                 </div>
 
@@ -1024,7 +1265,12 @@ export default function PatliputraLoginPage() {
                     rows={3}
                     placeholder="Brief architectural details, amenities and landmark highlights..."
                     value={newDelivered.description}
-                    onChange={(e) => setNewDelivered({ ...newDelivered, description: e.target.value })}
+                    onChange={(e) =>
+                      setNewDelivered({
+                        ...newDelivered,
+                        description: e.target.value,
+                      })
+                    }
                   />
                 </div>
 
@@ -1047,8 +1293,14 @@ export default function PatliputraLoginPage() {
 
         {/* MODAL: ADD ONGOING PROJECT */}
         {showAddOngoingModal && (
-          <div className={styles.modalBackdrop} onClick={() => setShowAddOngoingModal(false)}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={styles.modalBackdrop}
+            onClick={() => setShowAddOngoingModal(false)}
+          >
+            <div
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className={styles.modalHeader}>
                 <h3 className={styles.modalTitle}>Add Ongoing Development</h3>
                 <button
@@ -1069,7 +1321,9 @@ export default function PatliputraLoginPage() {
                       required
                       placeholder="e.g. Patliputra Royal Crest"
                       value={newOngoing.title}
-                      onChange={(e) => setNewOngoing({ ...newOngoing, title: e.target.value })}
+                      onChange={(e) =>
+                        setNewOngoing({ ...newOngoing, title: e.target.value })
+                      }
                     />
                   </div>
 
@@ -1080,7 +1334,9 @@ export default function PatliputraLoginPage() {
                       required
                       placeholder="e.g. 3 & 4 BHK Luxury Apartments"
                       value={newOngoing.type}
-                      onChange={(e) => setNewOngoing({ ...newOngoing, type: e.target.value })}
+                      onChange={(e) =>
+                        setNewOngoing({ ...newOngoing, type: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -1093,7 +1349,12 @@ export default function PatliputraLoginPage() {
                       required
                       placeholder="e.g. Bailey Road, Patna"
                       value={newOngoing.location}
-                      onChange={(e) => setNewOngoing({ ...newOngoing, location: e.target.value })}
+                      onChange={(e) =>
+                        setNewOngoing({
+                          ...newOngoing,
+                          location: e.target.value,
+                        })
+                      }
                     />
                   </div>
 
@@ -1101,9 +1362,13 @@ export default function PatliputraLoginPage() {
                     <label>Status Tag</label>
                     <select
                       value={newOngoing.tag}
-                      onChange={(e) => setNewOngoing({ ...newOngoing, tag: e.target.value })}
+                      onChange={(e) =>
+                        setNewOngoing({ ...newOngoing, tag: e.target.value })
+                      }
                     >
-                      <option value="Under Construction">Under Construction</option>
+                      <option value="Under Construction">
+                        Under Construction
+                      </option>
                       <option value="Ready To Move In">Ready To Move In</option>
                       <option value="Ultra Luxury">Ultra Luxury</option>
                       <option value="Upcoming Launch">Upcoming Launch</option>
@@ -1118,7 +1383,9 @@ export default function PatliputraLoginPage() {
                       type="text"
                       placeholder="e.g. 1,850 - 2,400 sq.ft."
                       value={newOngoing.area}
-                      onChange={(e) => setNewOngoing({ ...newOngoing, area: e.target.value })}
+                      onChange={(e) =>
+                        setNewOngoing({ ...newOngoing, area: e.target.value })
+                      }
                     />
                   </div>
 
@@ -1128,7 +1395,9 @@ export default function PatliputraLoginPage() {
                       type="text"
                       placeholder="e.g. ₹88 Lakhs*"
                       value={newOngoing.price}
-                      onChange={(e) => setNewOngoing({ ...newOngoing, price: e.target.value })}
+                      onChange={(e) =>
+                        setNewOngoing({ ...newOngoing, price: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -1141,7 +1410,12 @@ export default function PatliputraLoginPage() {
                       min={1}
                       max={8}
                       value={newOngoing.bedrooms}
-                      onChange={(e) => setNewOngoing({ ...newOngoing, bedrooms: Number(e.target.value) })}
+                      onChange={(e) =>
+                        setNewOngoing({
+                          ...newOngoing,
+                          bedrooms: Number(e.target.value),
+                        })
+                      }
                     />
                   </div>
 
@@ -1152,7 +1426,12 @@ export default function PatliputraLoginPage() {
                       min={1}
                       max={8}
                       value={newOngoing.bathrooms}
-                      onChange={(e) => setNewOngoing({ ...newOngoing, bathrooms: Number(e.target.value) })}
+                      onChange={(e) =>
+                        setNewOngoing({
+                          ...newOngoing,
+                          bathrooms: Number(e.target.value),
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -1163,7 +1442,9 @@ export default function PatliputraLoginPage() {
                     type="text"
                     placeholder="e.g. BRERAP00189-2/2026"
                     value={newOngoing.rera}
-                    onChange={(e) => setNewOngoing({ ...newOngoing, rera: e.target.value })}
+                    onChange={(e) =>
+                      setNewOngoing({ ...newOngoing, rera: e.target.value })
+                    }
                   />
                 </div>
 
@@ -1178,9 +1459,13 @@ export default function PatliputraLoginPage() {
                         alt={img.name}
                         title={img.name}
                         className={`${styles.presetThumb} ${
-                          newOngoing.image === img.url ? styles.presetThumbSelected : ""
+                          newOngoing.image === img.url
+                            ? styles.presetThumbSelected
+                            : ""
                         }`}
-                        onClick={() => setNewOngoing({ ...newOngoing, image: img.url })}
+                        onClick={() =>
+                          setNewOngoing({ ...newOngoing, image: img.url })
+                        }
                       />
                     ))}
                   </div>
@@ -1192,7 +1477,9 @@ export default function PatliputraLoginPage() {
                     type="text"
                     placeholder="https://images.unsplash.com/..."
                     value={newOngoing.image}
-                    onChange={(e) => setNewOngoing({ ...newOngoing, image: e.target.value })}
+                    onChange={(e) =>
+                      setNewOngoing({ ...newOngoing, image: e.target.value })
+                    }
                   />
                 </div>
 
@@ -1202,7 +1489,9 @@ export default function PatliputraLoginPage() {
                     type="text"
                     placeholder="Italian Marble, Clubhouse Access, Olympic Gym, Solar Common Areas"
                     value={newOngoing.features}
-                    onChange={(e) => setNewOngoing({ ...newOngoing, features: e.target.value })}
+                    onChange={(e) =>
+                      setNewOngoing({ ...newOngoing, features: e.target.value })
+                    }
                   />
                 </div>
 
@@ -1294,8 +1583,8 @@ export default function PatliputraLoginPage() {
                 }}
               >
                 Security keys are cryptographically issued to Patliputra Group
-                directors and designated IT managers. For key revocation or emergency
-                reset, contact the SuperAdmin Desk at{" "}
+                directors and designated IT managers. For key revocation or
+                emergency reset, contact the SuperAdmin Desk at{" "}
                 <strong style={{ color: "#deb360" }}>
                   security@patliputragroup.com
                 </strong>
@@ -1316,7 +1605,14 @@ export default function PatliputraLoginPage() {
         {/* Dynamic Toast Feedback */}
         {toastMessage && (
           <div className={styles.toastNotice} role="status">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#deb360" strokeWidth="2.5">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#deb360"
+              strokeWidth="2.5"
+            >
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
               <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
@@ -1328,11 +1624,13 @@ export default function PatliputraLoginPage() {
       {/* Footer Compliance Notice */}
       <footer className={styles.footerArea}>
         <p>
-          <strong>PATLIPUTRA GROUP IT INFRASTRUCTURE</strong> &bull; Version 2.5.0 (Executive Suite)
+          <strong>PATLIPUTRA GROUP IT INFRASTRUCTURE</strong> &bull; Version
+          2.5.0 (Executive Suite)
         </p>
         <p>
-          Authorized administrators may add, update, and remove Delivered &amp; Ongoing developments.
-          All session actions and data mutations are logged.
+          Authorized administrators may add, update, and remove Delivered &amp;
+          Ongoing developments. All session actions and data mutations are
+          logged.
         </p>
       </footer>
     </div>

@@ -3,14 +3,13 @@ import styles from "./PageBanner.module.css";
 
 interface PageBannerProps {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   breadcrumb: string;
   highlightWord?: string;
 }
 
 export default function PageBanner({
   title,
-  subtitle,
   breadcrumb,
   highlightWord,
 }: PageBannerProps) {
@@ -29,17 +28,20 @@ export default function PageBanner({
         </nav>
 
         <h1 className={styles.title}>
-          {highlightWord ? (
-            <>
-              {title.replace(highlightWord, "")}
-              <span className={styles.titleHighlight}>{highlightWord}</span>
-            </>
+          {highlightWord && title.toLowerCase().includes(highlightWord.toLowerCase()) ? (
+            title.split(new RegExp(`(${highlightWord})`, "i")).map((part, i) =>
+              part.toLowerCase() === highlightWord.toLowerCase() ? (
+                <span key={i} className={styles.titleHighlight}>
+                  {part}
+                </span>
+              ) : (
+                part
+              )
+            )
           ) : (
             title
           )}
         </h1>
-
-        <p className={styles.subtitle}>{subtitle}</p>
       </div>
     </section>
   );
