@@ -72,13 +72,30 @@ export async function POST(req: Request) {
         location: project.location || "Patna",
         area: project.area || "1,200 - 2,000 sq.ft.",
         price: project.price || "Price on Request",
-        bedrooms: Number(project.bedrooms) || 3,
-        bathrooms: Number(project.bathrooms) || 2,
+        bedrooms:
+          project.bedrooms !== undefined &&
+          project.bedrooms !== null &&
+          project.bedrooms !== "" &&
+          Number(project.bedrooms) > 0
+            ? Number(project.bedrooms)
+            : undefined,
+        bathrooms:
+          project.bathrooms !== undefined &&
+          project.bathrooms !== null &&
+          project.bathrooms !== "" &&
+          Number(project.bathrooms) > 0
+            ? Number(project.bathrooms)
+            : undefined,
         image:
           project.image ||
           "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80",
         tag: project.tag || "Under Construction",
-        rera: project.rera || "BRERAP-PENDING",
+        ...(project.rera ? { rera: project.rera } : {}),
+        description: project.description || undefined,
+        about: project.about || project.description || undefined,
+        sqft: project.sqft || undefined,
+        address: project.address || undefined,
+        amenities: Array.isArray(project.amenities) ? project.amenities : undefined,
         features: Array.isArray(project.features)
           ? project.features
           : ["Clubhouse Access", "24/7 Security", "Power Backup"],
@@ -200,16 +217,27 @@ export async function PUT(req: Request) {
         area: project.area ?? data.ongoing[index].area,
         price: project.price ?? data.ongoing[index].price,
         bedrooms:
-          project.bedrooms !== undefined
+          project.bedrooms !== undefined &&
+          project.bedrooms !== null &&
+          project.bedrooms !== "" &&
+          Number(project.bedrooms) > 0
             ? Number(project.bedrooms)
-            : data.ongoing[index].bedrooms,
+            : undefined,
         bathrooms:
-          project.bathrooms !== undefined
+          project.bathrooms !== undefined &&
+          project.bathrooms !== null &&
+          project.bathrooms !== "" &&
+          Number(project.bathrooms) > 0
             ? Number(project.bathrooms)
-            : data.ongoing[index].bathrooms,
+            : undefined,
         image: project.image ?? data.ongoing[index].image,
         tag: project.tag ?? data.ongoing[index].tag,
-        rera: project.rera ?? data.ongoing[index].rera,
+        rera: project.rera !== undefined ? (project.rera || undefined) : data.ongoing[index].rera,
+        description: project.description ?? data.ongoing[index].description,
+        about: project.about ?? data.ongoing[index].about,
+        sqft: project.sqft ?? data.ongoing[index].sqft,
+        address: project.address ?? data.ongoing[index].address,
+        amenities: project.amenities !== undefined ? project.amenities : data.ongoing[index].amenities,
         features: Array.isArray(project.features)
           ? project.features
           : data.ongoing[index].features,

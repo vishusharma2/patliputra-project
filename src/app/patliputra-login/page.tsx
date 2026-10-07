@@ -26,11 +26,16 @@ interface OngoingProject {
   location: string;
   area: string;
   price: string;
-  bedrooms: number;
-  bathrooms: number;
+  bedrooms?: number;
+  bathrooms?: number;
   image: string;
   tag?: string;
-  rera: string;
+  rera?: string;
+  description?: string;
+  sqft?: string;
+  about?: string;
+  address?: string;
+  amenities?: string[];
   features: string[];
 }
 
@@ -50,6 +55,10 @@ const DELIVERED_PRESET_IMAGES = [
 ];
 
 const ONGOING_PRESET_IMAGES = [
+  {
+    name: "Patliputra Signature Park",
+    url: "/img/signature_park.jpg",
+  },
   {
     name: "Luxury High-Rise Tower",
     url: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80",
@@ -110,19 +119,38 @@ export default function PatliputraLoginPage() {
   });
 
   // Add Ongoing Form State
-  const [newOngoing, setNewOngoing] = useState({
+  const [newOngoing, setNewOngoing] = useState<{
+    title: string;
+    type: string;
+    location: string;
+    area: string;
+    price: string;
+    bedrooms?: number | string;
+    bathrooms?: number | string;
+    image: string;
+    tag: string;
+    rera?: string;
+    sqft?: string;
+    about?: string;
+    address?: string;
+    amenities?: string;
+    features: string;
+  }>({
     title: "",
-    type: "3 & 4 BHK",
-    location: "Bailey Road, Patna",
-    area: "1,800 - 2,500 sq.ft.",
-    price: "₹85 Lakhs*",
-    bedrooms: 3,
-    bathrooms: 3,
+    type: "1BHK, 2BHK, Retails, Office Spaces & Luxury Studio Apartments",
+    location: "Greater Noida",
+    area: "10 Acres",
+    price: "Starts @ 40 Lakh*",
+    bedrooms: "",
+    bathrooms: "",
     image: ONGOING_PRESET_IMAGES[0].url,
     tag: "Under Construction",
-    rera: "BRERAP00" + Math.floor(100 + Math.random() * 900) + "-1/2026",
+    sqft: "An integrated luxury hub spread over 10 acres sqft",
+    about: "",
+    address: "",
+    amenities: "",
     features:
-      "Clubhouse Access, 24/7 Multi-Tier Security, High Speed Elevators, 100% Power Backup",
+      "Have 1BHK, 2BHK, Retails, Office Spaces and Luxury Studio Apartments., * East-Facing Flats, An integrated luxury hub spread over 10 acres",
   });
 
   // Edit Project States & Modals
@@ -135,6 +163,8 @@ export default function PatliputraLoginPage() {
   );
   const [showEditOngoingModal, setShowEditOngoingModal] = useState(false);
   const [editingOngoingFeaturesStr, setEditingOngoingFeaturesStr] =
+    useState("");
+  const [editingOngoingAmenitiesStr, setEditingOngoingAmenitiesStr] =
     useState("");
 
   // Check saved session on mount & set document title
@@ -345,6 +375,13 @@ export default function PatliputraLoginPage() {
       .map((f) => f.trim())
       .filter(Boolean);
 
+    const amenityList = newOngoing.amenities
+      ? newOngoing.amenities
+          .split(",")
+          .map((a) => a.trim())
+          .filter(Boolean)
+      : undefined;
+
     try {
       const res = await fetch("/api/admin/projects", {
         method: "POST",
@@ -359,11 +396,20 @@ export default function PatliputraLoginPage() {
             location: newOngoing.location.trim() || "Bailey Road, Patna",
             area: newOngoing.area.trim() || "1,800 - 2,500 sq.ft.",
             price: newOngoing.price.trim() || "Price on Request",
-            bedrooms: Number(newOngoing.bedrooms) || 3,
-            bathrooms: Number(newOngoing.bathrooms) || 3,
+            bedrooms:
+              newOngoing.bedrooms && Number(newOngoing.bedrooms) > 0
+                ? Number(newOngoing.bedrooms)
+                : undefined,
+            bathrooms:
+              newOngoing.bathrooms && Number(newOngoing.bathrooms) > 0
+                ? Number(newOngoing.bathrooms)
+                : undefined,
             image: newOngoing.image || ONGOING_PRESET_IMAGES[0].url,
             tag: newOngoing.tag || "Under Construction",
-            rera: newOngoing.rera.trim() || "BRERAP00-PENDING",
+            sqft: newOngoing.sqft?.trim() || undefined,
+            about: newOngoing.about?.trim() || undefined,
+            address: newOngoing.address?.trim() || undefined,
+            amenities: amenityList && amenityList.length > 0 ? amenityList : undefined,
             features:
               featureList.length > 0
                 ? featureList
@@ -378,17 +424,20 @@ export default function PatliputraLoginPage() {
         setShowAddOngoingModal(false);
         setNewOngoing({
           title: "",
-          type: "3 & 4 BHK",
-          location: "Bailey Road, Patna",
-          area: "1,800 - 2,500 sq.ft.",
-          price: "₹85 Lakhs*",
-          bedrooms: 3,
-          bathrooms: 3,
+          type: "1BHK, 2BHK, Retails, Office Spaces & Luxury Studio Apartments",
+          location: "Greater Noida",
+          area: "10 Acres",
+          price: "Starts @ 40 Lakh*",
+          bedrooms: "",
+          bathrooms: "",
           image: ONGOING_PRESET_IMAGES[0].url,
           tag: "Under Construction",
-          rera: "BRERAP00" + Math.floor(100 + Math.random() * 900) + "-1/2026",
+          sqft: "An integrated luxury hub spread over 10 acres sqft",
+          about: "",
+          address: "",
+          amenities: "",
           features:
-            "Clubhouse Access, 24/7 Multi-Tier Security, High Speed Elevators, 100% Power Backup",
+            "Have 1BHK, 2BHK, Retails, Office Spaces and Luxury Studio Apartments., * East-Facing Flats, An integrated luxury hub spread over 10 acres",
         });
         setToastMessage(
           `✓ Ongoing project "${newOngoing.title}" published successfully!`,
@@ -478,6 +527,11 @@ export default function PatliputraLoginPage() {
     setEditingOngoingFeaturesStr(
       Array.isArray(project.features) ? project.features.join(", ") : ""
     );
+    setEditingOngoingAmenitiesStr(
+      Array.isArray(project.amenities)
+        ? project.amenities.join(", ")
+        : project.amenities || ""
+    );
     setShowEditOngoingModal(true);
   };
 
@@ -494,6 +548,11 @@ export default function PatliputraLoginPage() {
       .map((f) => f.trim())
       .filter(Boolean);
 
+    const amenityList = editingOngoingAmenitiesStr
+      .split(",")
+      .map((a) => a.trim())
+      .filter(Boolean);
+
     try {
       const res = await fetch("/api/admin/projects", {
         method: "PUT",
@@ -507,11 +566,20 @@ export default function PatliputraLoginPage() {
             location: editingOngoing.location.trim() || "Bailey Road, Patna",
             area: editingOngoing.area.trim() || "1,800 - 2,500 sq.ft.",
             price: editingOngoing.price.trim() || "Price on Request",
-            bedrooms: Number(editingOngoing.bedrooms) || 3,
-            bathrooms: Number(editingOngoing.bathrooms) || 3,
+            bedrooms:
+              editingOngoing.bedrooms && Number(editingOngoing.bedrooms) > 0
+                ? Number(editingOngoing.bedrooms)
+                : undefined,
+            bathrooms:
+              editingOngoing.bathrooms && Number(editingOngoing.bathrooms) > 0
+                ? Number(editingOngoing.bathrooms)
+                : undefined,
             image: editingOngoing.image || ONGOING_PRESET_IMAGES[0].url,
             tag: editingOngoing.tag || "Under Construction",
-            rera: editingOngoing.rera.trim() || "BRERAP00-PENDING",
+            sqft: editingOngoing.sqft?.trim() || undefined,
+            about: editingOngoing.about?.trim() || undefined,
+            address: editingOngoing.address?.trim() || undefined,
+            amenities: amenityList.length > 0 ? amenityList : undefined,
             features:
               featureList.length > 0
                 ? featureList
@@ -1143,14 +1211,6 @@ export default function PatliputraLoginPage() {
                           >
                             {p.type}
                           </span>
-                          <span
-                            style={{
-                              fontSize: "0.7rem",
-                              color: "rgba(255,255,255,0.5)",
-                            }}
-                          >
-                            {p.rera}
-                          </span>
                         </div>
                         <h3 className={styles.cardTitle}>{p.title}</h3>
                         <div className={styles.cardLocation}>
@@ -1172,12 +1232,16 @@ export default function PatliputraLoginPage() {
                           <span>
                             Area: <strong>{p.area}</strong>
                           </span>
-                          <span>
-                            BHK: <strong>{p.bedrooms}</strong>
-                          </span>
-                          <span>
-                            Baths: <strong>{p.bathrooms}</strong>
-                          </span>
+                          {p.bedrooms !== undefined && p.bedrooms !== null && Number(p.bedrooms) > 0 && (
+                            <span>
+                              BHK: <strong>{p.bedrooms}</strong>
+                            </span>
+                          )}
+                          {p.bathrooms !== undefined && p.bathrooms !== null && Number(p.bathrooms) > 0 && (
+                            <span>
+                              Baths: <strong>{p.bathrooms}</strong>
+                            </span>
+                          )}
                           <span>
                             Price: <strong>{p.price}</strong>
                           </span>
@@ -1622,49 +1686,40 @@ export default function PatliputraLoginPage() {
 
                 <div className={styles.formRow}>
                   <div className={styles.formField}>
-                    <label>Bedrooms (BHK)</label>
+                    <label>Bedrooms (BHK) (Optional)</label>
                     <input
                       type="number"
-                      min={1}
-                      max={8}
-                      value={newOngoing.bedrooms}
+                      min={0}
+                      max={20}
+                      placeholder="e.g. 3 (leave blank if N/A)"
+                      value={newOngoing.bedrooms ?? ""}
                       onChange={(e) =>
                         setNewOngoing({
                           ...newOngoing,
-                          bedrooms: Number(e.target.value),
+                          bedrooms: e.target.value ? Number(e.target.value) : "",
                         })
                       }
                     />
                   </div>
 
                   <div className={styles.formField}>
-                    <label>Bathrooms</label>
+                    <label>Bathrooms (Optional)</label>
                     <input
                       type="number"
-                      min={1}
-                      max={8}
-                      value={newOngoing.bathrooms}
+                      min={0}
+                      max={20}
+                      placeholder="e.g. 2 (leave blank if N/A)"
+                      value={newOngoing.bathrooms ?? ""}
                       onChange={(e) =>
                         setNewOngoing({
                           ...newOngoing,
-                          bathrooms: Number(e.target.value),
+                          bathrooms: e.target.value ? Number(e.target.value) : "",
                         })
                       }
                     />
                   </div>
                 </div>
 
-                <div className={styles.formField}>
-                  <label>RERA Registration Number</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. BRERAP00189-2/2026"
-                    value={newOngoing.rera}
-                    onChange={(e) =>
-                      setNewOngoing({ ...newOngoing, rera: e.target.value })
-                    }
-                  />
-                </div>
 
                 <div className={styles.formField}>
                   <label>Select Architectural Image Preset</label>
@@ -1709,6 +1764,54 @@ export default function PatliputraLoginPage() {
                     value={newOngoing.features}
                     onChange={(e) =>
                       setNewOngoing({ ...newOngoing, features: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>SQFT / Scale Specification (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. An integrated luxury hub spread over 10 acres sqft"
+                    value={newOngoing.sqft || ""}
+                    onChange={(e) =>
+                      setNewOngoing({ ...newOngoing, sqft: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Property Full Address (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Signature Park, Plot No. INS - 02, Sector - CHI V, Greater Noida"
+                    value={newOngoing.address || ""}
+                    onChange={(e) =>
+                      setNewOngoing({ ...newOngoing, address: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>About Property (Optional)</label>
+                  <textarea
+                    rows={4}
+                    placeholder="Comprehensive overview of architecture, commercial highlights, connectivity..."
+                    value={newOngoing.about || ""}
+                    onChange={(e) =>
+                      setNewOngoing({ ...newOngoing, about: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Amenities (comma-separated) (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="MEDITATION GARDEN, 24/7 SECURITY, CCTV SURVEILLANCE, SWIMMING POOL..."
+                    value={newOngoing.amenities || ""}
+                    onChange={(e) =>
+                      setNewOngoing({ ...newOngoing, amenities: e.target.value })
                     }
                   />
                 </div>
@@ -2052,52 +2155,40 @@ export default function PatliputraLoginPage() {
 
                 <div className={styles.formRow}>
                   <div className={styles.formField}>
-                    <label>Bedrooms (BHK)</label>
+                    <label>Bedrooms (BHK) (Optional)</label>
                     <input
                       type="number"
-                      min={1}
-                      max={8}
-                      value={editingOngoing.bedrooms}
+                      min={0}
+                      max={20}
+                      placeholder="Leave blank if N/A"
+                      value={editingOngoing.bedrooms ?? ""}
                       onChange={(e) =>
                         setEditingOngoing({
                           ...editingOngoing,
-                          bedrooms: Number(e.target.value),
+                          bedrooms: e.target.value ? Number(e.target.value) : undefined,
                         })
                       }
                     />
                   </div>
 
                   <div className={styles.formField}>
-                    <label>Bathrooms</label>
+                    <label>Bathrooms (Optional)</label>
                     <input
                       type="number"
-                      min={1}
-                      max={8}
-                      value={editingOngoing.bathrooms}
+                      min={0}
+                      max={20}
+                      placeholder="Leave blank if N/A"
+                      value={editingOngoing.bathrooms ?? ""}
                       onChange={(e) =>
                         setEditingOngoing({
                           ...editingOngoing,
-                          bathrooms: Number(e.target.value),
+                          bathrooms: e.target.value ? Number(e.target.value) : undefined,
                         })
                       }
                     />
                   </div>
                 </div>
 
-                <div className={styles.formField}>
-                  <label>RERA Registration Number</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. BRERAP00350-1/2026"
-                    value={editingOngoing.rera}
-                    onChange={(e) =>
-                      setEditingOngoing({
-                        ...editingOngoing,
-                        rera: e.target.value,
-                      })
-                    }
-                  />
-                </div>
 
                 <div className={styles.formField}>
                   <label>Select Project Image Preset</label>
@@ -2148,6 +2239,63 @@ export default function PatliputraLoginPage() {
                     value={editingOngoingFeaturesStr}
                     onChange={(e) =>
                       setEditingOngoingFeaturesStr(e.target.value)
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>SQFT / Scale Specification (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. An integrated luxury hub spread over 10 acres sqft"
+                    value={editingOngoing.sqft || ""}
+                    onChange={(e) =>
+                      setEditingOngoing({
+                        ...editingOngoing,
+                        sqft: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Property Full Address (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Signature Park, Plot No. INS - 02, Sector - CHI V, Greater Noida"
+                    value={editingOngoing.address || ""}
+                    onChange={(e) =>
+                      setEditingOngoing({
+                        ...editingOngoing,
+                        address: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>About Property (Optional)</label>
+                  <textarea
+                    rows={4}
+                    placeholder="Comprehensive overview of architecture, commercial highlights, connectivity..."
+                    value={editingOngoing.about || editingOngoing.description || ""}
+                    onChange={(e) =>
+                      setEditingOngoing({
+                        ...editingOngoing,
+                        about: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Amenities (comma-separated) (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="MEDITATION GARDEN, 24/7 SECURITY, CCTV SURVEILLANCE, SWIMMING POOL..."
+                    value={editingOngoingAmenitiesStr}
+                    onChange={(e) =>
+                      setEditingOngoingAmenitiesStr(e.target.value)
                     }
                   />
                 </div>

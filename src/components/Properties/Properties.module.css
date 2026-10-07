@@ -143,12 +143,7 @@
   color: var(--color-primary);
 }
 
-.reraNumber {
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  letter-spacing: 0.5px;
-}
+
 
 .cardTitle {
   font-family: var(--font-heading);
@@ -260,6 +255,488 @@
   }
 
   .cardFeatures {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================================
+   ONGOING PROJECT CUSTOM LAYOUTS (SINGLE FULL-WIDTH & MULTI)
+   ======================================================== */
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: var(--space-12);
+}
+
+.titleMain {
+  font-family: var(--font-heading);
+  font-size: clamp(1.85rem, 3.2vw, 2.5rem);
+  font-weight: 800;
+  color: #1a1a2e;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.accentBar {
+  display: block;
+  width: 48px;
+  height: 4px;
+  background: #1a1a2e;
+  margin: 0.5rem auto 1rem auto;
+  border-radius: 2px;
+}
+
+.subtitleMain {
+  font-family: var(--font-display, "Outfit", sans-serif);
+  font-size: 1.05rem;
+  color: #4a5568;
+  max-width: 760px;
+  margin: 0 auto;
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+/* ---------- Single Project Full Width Banner Card ---------- */
+.singleProjectWrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.horizontalCard {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  position: relative;
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  min-height: 270px;
+}
+
+.horizontalCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.1);
+  border-color: rgba(200, 164, 92, 0.45);
+}
+
+@media (max-width: 820px) {
+  .horizontalCard {
+    flex-direction: column;
+  }
+  .horizontalImageCol {
+    width: 100%;
+    min-height: 240px;
+  }
+  .horizontalContentCol {
+    padding: 1.5rem 1.25rem;
+  }
+}
+
+.horizontalImageCol {
+  width: 42%;
+  position: relative;
+  overflow: hidden;
+  background: #0f1020;
+  flex-shrink: 0;
+}
+
+.horizontalImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.horizontalTagBadge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(15, 16, 32, 0.88);
+  border-left: 3px solid #deb360;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.3rem 0.75rem;
+  border-radius: 4px;
+  backdrop-filter: blur(8px);
+}
+
+.horizontalContentCol {
+  flex: 1;
+  padding: 2.2rem 2.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.cardWatermark {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.cardWatermark img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.horizontalHeaderGroup {
+  margin-bottom: 1.25rem;
+  padding-right: 65px;
+}
+
+.horizontalTitle {
+  font-family: var(--font-heading, "Playfair Display", serif);
+  font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 0.4rem 0;
+  line-height: 1.25;
+}
+
+.horizontalLocation {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #333333;
+}
+
+.horizontalLocation svg {
+  color: #1a1a2e;
+}
+
+.horizontalHighlights {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1.6rem;
+}
+
+.highlightLine1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.96rem;
+}
+
+.highlightHubText {
+  color: #2d3748;
+  font-weight: 500;
+}
+
+.highlightPriceText {
+  color: #1a1a2e;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.highlightLine2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+
+.highlightConfigText {
+  color: #4a5568;
+}
+
+.highlightOrientText {
+  color: #2d3748;
+  font-weight: 600;
+}
+
+/* Action Buttons Row */
+.horizontalActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  padding-top: 1.15rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.btnWhatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #25D366;
+  border: 1.5px solid #25D366;
+  padding: 0.62rem 1.35rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btnWhatsapp:hover {
+  background: #25D366;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.3);
+}
+
+.btnViewDetails {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #1a2238;
+  color: #ffffff;
+  border: 1.5px solid #1a2238;
+  padding: 0.62rem 1.35rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btnViewDetails:hover {
+  background: #deb360;
+  border-color: #deb360;
+  color: #0f1020;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(222, 179, 96, 0.35);
+}
+
+.btnCallBack {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #1a2238;
+  color: #ffffff;
+  border: 1.5px solid #1a2238;
+  padding: 0.62rem 1.35rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btnCallBack:hover {
+  background: #deb360;
+  border-color: #deb360;
+  color: #0f1020;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(222, 179, 96, 0.35);
+}
+
+.horizontalAdminActions {
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.btnAdminEdit {
+  background: rgba(200, 164, 92, 0.15);
+  border: 1px solid rgba(200, 164, 92, 0.5);
+  color: #9c7322;
+  padding: 0.55rem 0.95rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btnAdminEdit:hover {
+  background: #deb360;
+  color: #0f1020;
+}
+
+.btnAdminRemove {
+  background: rgba(231, 76, 60, 0.12);
+  border: 1px solid rgba(231, 76, 60, 0.4);
+  color: #c0392b;
+  padding: 0.55rem 0.95rem;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btnAdminRemove:hover {
+  background: #e74c3c;
+  color: #ffffff;
+}
+
+/* ---------- Multi-Project Grid (Delivered Project Sizing) ---------- */
+.deliveredGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.deliveredStyleCard {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(26, 26, 46, 0.08);
+  box-shadow: 0 6px 20px rgba(26, 26, 46, 0.06);
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.45s ease, border-color 0.45s ease;
+}
+
+.deliveredStyleCard:hover {
+  transform: translateY(-8px);
+  border-color: rgba(200, 164, 92, 0.45);
+  box-shadow: 0 22px 44px rgba(26, 26, 46, 0.14);
+}
+
+.deliveredMedia {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--color-gray-200);
+}
+
+.deliveredImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.deliveredStyleCard:hover .deliveredImage {
+  transform: scale(1.07);
+}
+
+.deliveredBadge {
+  position: absolute;
+  top: 0.9rem;
+  left: 0.9rem;
+  padding: 0.3rem 0.8rem;
+  background: rgba(26, 26, 46, 0.88);
+  border-left: 3px solid var(--color-primary);
+  transform: skewX(-15deg);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.deliveredBadge span {
+  display: inline-block;
+  transform: skewX(15deg);
+}
+
+.deliveredIndex {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.deliveredBody {
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.deliveredName {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-secondary);
+  margin-bottom: 0.3rem;
+}
+
+.deliveredLocation {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.deliveredDesc {
+  font-size: 0.84rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  flex: 1;
+}
+
+.deliveredSpecsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  color: #333333;
+  margin-bottom: 0.85rem;
+  font-weight: 600;
+}
+
+.deliveredCardActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-gray-200);
+  margin-top: auto;
+}
+
+@media (max-width: 1200px) {
+  .deliveredGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .horizontalCard {
+    flex-direction: column;
+  }
+  .horizontalImageCol {
+    width: 100%;
+    height: 280px;
+  }
+  .horizontalContentCol {
+    padding: 1.75rem;
+  }
+  .horizontalAdminActions {
+    margin-left: 0;
+    width: 100%;
+  }
+  .deliveredGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .deliveredGrid {
     grid-template-columns: 1fr;
   }
 }

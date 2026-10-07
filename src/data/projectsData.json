@@ -65,5 +65,38 @@
       "description": "This premium residential project offers spacious 2 & 3 BHK apartments with modern layouts, quality finishes, and lifestyle amenities, ensuring comfort and convenience in a prime Patna location."
     }
   ],
-  "ongoing": []
+  "ongoing": [
+    {
+      "id": "ongoing-signature-park",
+      "order": 1,
+      "title": "Patliputra Signature Park",
+      "location": "Greater Noida",
+      "type": "1BHK, 2BHK, Retails, Office Spaces & Luxury Studio Apartments",
+      "area": "10 Acres",
+      "price": "Starts @ 40 Lakh*",
+      "image": "/img/signature_park.jpg",
+      "tag": "Under Construction",
+      "sqft": "An integrated luxury hub spread over 10 acres sqft",
+      "description": "An integrated luxury hub spread over 10 acres, Patliputra Signature Park is located in the heart of Greater Noida just two minutes away from the Pari Chowk and Knowledge Park Metro Station. It is known as THE COMMERCIAL DESTINATION OF GREATER NOIDA. Designed by India's leading Architect, Signature Park offers one of its kind classic architecture of Premium Retail Area, Hyper-Market, Anchor Stores, Branded Stores, Entertainment Zone, Gaming Zone, Food Court, Restaurants, Ultra-Luxurious Serviced Residences, Fully Furnished Studio Apartments, & Office Spaces.",
+      "about": "An integrated luxury hub spread over 10 acres, Patliputra Signature Park is located in the heart of Greater Noida just two minutes away from the Pari Chowk and Knowledge Park Metro Station. It is known as THE COMMERCIAL DESTINATION OF GREATER NOIDA. Designed by India's leading Architect, Signature Park offers one of its kind classic architecture of Premium Retail Area, Hyper-Market, Anchor Stores, Branded Stores, Entertainment Zone, Gaming Zone, Food Court, Restaurants, Ultra-Luxurious Serviced Residences, Fully Furnished Studio Apartments, & Office Spaces.",
+      "address": "Signature Park, Plot No. INS - 02, Sector - CHI V, Greater Noida, Gautam Buddha Nagar (Uttar Pradesh) 201310",
+      "amenities": [
+        "MEDITATION GARDEN",
+        "24/7 SECURITY",
+        "CCTV SURVEILLANCE",
+        "AMPLE PARKING SPACE",
+        "FULLY AUTOMATIC LIFTS",
+        "OPEN GYM",
+        "LANDSCAPE GARDEN",
+        "24X7 POWER BACKUP",
+        "YOGA DESK",
+        "SWIMMING POOL"
+      ],
+      "features": [
+        "Have 1BHK, 2BHK, Retails, Office Spaces and Luxury Studio Apartments.",
+        "* East-Facing Flats",
+        "An integrated luxury hub spread over 10 acres"
+      ]
+    }
+  ]
 }
