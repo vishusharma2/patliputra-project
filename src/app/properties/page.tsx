@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import PageBanner from "@/components/PageBanner/PageBanner";
 import Properties from "@/components/Properties/Properties";
+import DeliveredProjects from "@/components/DeliveredProjects/DeliveredProjects";
 import CapitalGains from "@/components/CapitalGains/CapitalGains";
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function PropertiesPage() {
         breadcrumb="Properties"
       />
       <Properties />
+      <DeliveredProjects />
       <CapitalGains />
     </>
   );

@@ -38,6 +38,10 @@ export default function Footer() {
     }
   };
 
+  if (pathname === "/patliputra-login") {
+    return null;
+  }
+
   return (
     <footer className={styles.footer} role="contentinfo">
       <div className="container">

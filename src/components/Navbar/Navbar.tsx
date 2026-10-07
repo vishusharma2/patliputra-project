@@ -45,6 +45,10 @@ export default function Navbar() {
     return pathname === href || pathname.startsWith(href + "/");
   };
 
+  if (pathname === "/patliputra-login") {
+    return null;
+  }
+
   return (
     <header
       className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}
