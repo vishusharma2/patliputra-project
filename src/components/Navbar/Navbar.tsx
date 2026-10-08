@@ -11,7 +11,6 @@ const navLinks = [
   { label: "Masterpiece", href: "/masterpiece" },
   { label: "Projects", href: "/properties" },
   { label: "Diversified", href: "/diversified" },
-  { label: "Landmarks", href: "/landmarks" },
   { label: "Why Choose Us", href: "/why-us" },
   { label: "Media", href: "/media" },
   { label: "Contact", href: "/contact" },
