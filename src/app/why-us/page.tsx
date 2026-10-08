@@ -5,9 +5,9 @@ import Amenities from "@/components/Amenities/Amenities";
 import CapitalGains from "@/components/CapitalGains/CapitalGains";
 
 export const metadata: Metadata = {
-  title: "Why Choose Us | Patliputra Group - RERA Approved, High ROI Real Estate",
+  title: "Why Choose Us | Patliputra Group - 30+ Years Legacy, Trusted Real Estate",
   description:
-    "Discover why over 8,500 families and investors trust Patliputra Group: 25+ years legacy, 100% RERA assurance, earthquake-resistant engineering, and 40+ luxury amenities.",
+    "Trusted by thousands of families for over 30 years, we deliver quality, innovation, and customer-first experiences across Bihar.",
 };
 
 export default function WhyUsPage() {
@@ -16,7 +16,7 @@ export default function WhyUsPage() {
       <PageBanner
         title="WHY CHOOSE PATLIPUTRA"
         highlightWord="PATLIPUTRA"
-        subtitle="Over 25 years of building trust, 100% RERA compliance, unmatched capital appreciation, and 40+ resort-grade lifestyle amenities in Bihar."
+        subtitle="Trusted by thousands of families for over 30 years, we deliver quality, innovation, and customer-first experiences in every project."
         breadcrumb="Why Choose Us"
       />
       <WhyChoose />

@@ -1,39 +1,39 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./Footer.module.css";
+import initialNewsData from "@/data/newsData.json";
 
-interface RecentPost {
-  title: string;
-  date: string;
+interface NewsItem {
+  id: string;
+  source?: string;
+  date?: string;
+  headline: string;
+  englishTitle?: string;
   image: string;
 }
-
-const recentPosts: RecentPost[] = [
-  {
-    title: "Top 5 High-ROI Investment Corridors in Patna for 2024",
-    date: "14 MARCH 2024",
-    image:
-      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=120&q=80",
-  },
-  {
-    title: "Patliputra Twin Towers Reaches 25th Floor Milestone",
-    date: "28 FEBRUARY 2024",
-    image:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=120&q=80",
-  },
-  {
-    title: "Understanding Bihar RERA Regulations Before Buying",
-    date: "10 JANUARY 2024",
-    image:
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=120&q=80",
-  },
-];
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const pathname = usePathname();
+
+  // Extract only the latest news from media
+  const [latestPost, setLatestPost] = useState<NewsItem | null>(
+    (initialNewsData[0] as NewsItem) || null
+  );
+
+  useEffect(() => {
+    fetch("/api/admin/news")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setLatestPost(data[0]);
+        }
+      })
+      .catch((err) => console.error("Error fetching latest news for footer:", err));
+  }, []);
 
   const handleLinkClick = (href: string) => {
     if (pathname === href) {
@@ -128,95 +128,43 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Recent News */}
+          {/* Recent News - Only Latest */}
           <div className={styles.col}>
             <h4 className={styles.colTitle}>RECENT NEWS</h4>
-            <div className={styles.postsList}>
-              {recentPosts.map((post) => (
-                <article key={post.title} className={styles.postItem}>
+            {latestPost ? (
+              <article className={styles.postItem}>
+                <Link
+                  href="/media"
+                  className={styles.postThumbLink}
+                  onClick={() => handleLinkClick("/media")}
+                >
                   <img
-                    src={post.image}
-                    alt={post.title}
+                    src={latestPost.image}
+                    alt={latestPost.englishTitle || latestPost.headline}
                     className={styles.postThumb}
                     width={56}
                     height={56}
                     loading="lazy"
                   />
-                  <div className={styles.postContent}>
-                    <span className={styles.postDate}>{post.date}</span>
-                    <Link
-                      href="/media"
-                      className={styles.postTitle}
-                      onClick={() => handleLinkClick("/media")}
-                    >
-                      {post.title}
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick Links */}
-          <div className={styles.col}>
-            <h4 className={styles.colTitle}>QUICK LINKS</h4>
-            <ul className={styles.linksList}>
-              <li>
-                <Link href="/" onClick={() => handleLinkClick("/")}>
-                  Home
                 </Link>
-              </li>
-              <li>
-                <Link href="/about" onClick={() => handleLinkClick("/about")}>
-                  About Patliputra Group
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/masterpiece"
-                  onClick={() => handleLinkClick("/masterpiece")}
-                >
-                  Our Masterpiece
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/properties"
-                  onClick={() => handleLinkClick("/properties")}
-                >
-                  Ongoing Projects
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/diversified"
-                  onClick={() => handleLinkClick("/diversified")}
-                >
-                  Diversified Verticals
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/landmarks"
-                  onClick={() => handleLinkClick("/landmarks")}
-                >
-                  Upcoming Landmarks
-                </Link>
-              </li>
-              <li>
-                <Link href="/why-us" onClick={() => handleLinkClick("/why-us")}>
-                  Why Invest With Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  onClick={() => handleLinkClick("/contact")}
-                >
-                  Schedule Site Visit
-                </Link>
-              </li>
-            </ul>
+                <div className={styles.postContent}>
+                  <span className={styles.postDate}>
+                    {latestPost.date || "RECENT COVERAGE"}
+                  </span>
+                  <Link
+                    href="/media"
+                    className={styles.postTitle}
+                    onClick={() => handleLinkClick("/media")}
+                  >
+                    {latestPost.englishTitle || latestPost.headline}
+                  </Link>
+                </div>
+              </article>
+            ) : (
+              <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.6)" }}>
+                No recent news published yet.
+              </p>
+            )}
           </div>
 
           {/* Contact Info */}
@@ -289,15 +237,12 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className={styles.bottomBar}>
           <p className={styles.copyright}>
-            &copy; {currentYear} Patliputra Group. All Rights Reserved. RERA
-            Bihar Reg: BRERAP00234-1/2023.
+            &copy; {currentYear} Patliputra Group. All Rights Reserved.
           </p>
           <div className={styles.bottomLinks}>
-            <Link href="/about">Privacy Policy</Link>
-            <span>&bull;</span>
-            <Link href="/about">Terms &amp; Conditions</Link>
-            <span>&bull;</span>
-            <a href="/sitemap.xml">XML Sitemap</a>
+            <Link href="https://github.com/vishusharma2/" target="Blank">
+              Made By VS
+            </Link>
           </div>
         </div>
       </div>
