@@ -66,6 +66,7 @@
   color: var(--color-primary);
   background: linear-gradient(135deg, #c8a45c 0%, #dfc384 50%, #a68640 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
