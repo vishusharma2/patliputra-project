@@ -46,7 +46,7 @@ export default function About() {
               <div className={styles.mediaFrame}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/img/signature_park.jpg"
+                  src="https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/logo%20and%20other/signature_park.jpg"
                   alt="Patliputra Signature Park - Iconic mixed-use landmark development in Patna"
                   className={styles.introImage}
                   loading="lazy"
@@ -62,7 +62,7 @@ export default function About() {
                   </div>
                   <span style={{ color: "#deb360", fontSize: "1.1rem" }}>
                     <img
-                      src="img/logo_final.png"
+                      src="https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/logo%20and%20other/logo_final.png"
                       alt="logo"
                       height={"50px"}
                       width={"50px"}
@@ -194,7 +194,7 @@ export default function About() {
                 <div className={styles.cmdPhotoContainer}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/img/anilkumar.jpg"
+                    src="https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/logo%20and%20other/anilkumar.jpg"
                     alt="Anil Kumar, CMD of Patliputra Group"
                     className={styles.cmdPhoto}
                     loading="lazy"

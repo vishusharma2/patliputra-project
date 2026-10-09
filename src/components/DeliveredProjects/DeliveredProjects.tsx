@@ -3,7 +3,6 @@
 import { useEffect, useState, FormEvent } from "react";
 import Link from "next/link";
 import styles from "./DeliveredProjects.module.css";
-import initialData from "@/data/projectsData.json";
 
 export interface DeliveredProject {
   id?: string;
@@ -26,9 +25,7 @@ const PRESET_DELIVERED_IMAGES = [
 ];
 
 export default function DeliveredProjects() {
-  const [projects, setProjects] = useState<DeliveredProject[]>(
-    initialData.delivered || []
-  );
+  const [projects, setProjects] = useState<DeliveredProject[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [toast, setToast] = useState<string | null>(null);

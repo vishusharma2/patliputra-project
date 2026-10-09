@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import styles from "./MediaEvents.module.css";
 
-import initialNewsData from "@/data/newsData.json";
-
 interface MediaItem {
   id: string;
   category: "clipping" | "release";
@@ -20,7 +18,7 @@ interface MediaItem {
 }
 
 export default function MediaEvents() {
-  const [items, setItems] = useState<MediaItem[]>(initialNewsData as MediaItem[]);
+  const [items, setItems] = useState<MediaItem[]>([]);
   const [activeModalItem, setActiveModalItem] = useState<MediaItem | null>(
     null,
   );
@@ -32,12 +30,12 @@ export default function MediaEvents() {
         throw new Error("Failed to fetch news");
       })
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setItems(data);
         }
       })
       .catch((err) => {
-        console.log("Using initial news data:", err);
+        console.error("Error fetching news from Supabase:", err);
       });
   }, []);
 

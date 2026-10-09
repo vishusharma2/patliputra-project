@@ -3,7 +3,6 @@
 import { useEffect, useState, FormEvent } from "react";
 import Link from "next/link";
 import styles from "./Properties.module.css";
-import initialData from "@/data/projectsData.json";
 
 export interface Property {
   id: string;
@@ -61,9 +60,7 @@ const ONGOING_PRESET_IMAGES = [
 ];
 
 export default function Properties() {
-  const [propertiesList, setPropertiesList] = useState<Property[]>(
-    initialData.ongoing || [],
-  );
+  const [propertiesList, setPropertiesList] = useState<Property[]>([]);
   const [activeFilter, setActiveFilter] = useState("All Projects");
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -215,7 +212,8 @@ export default function Properties() {
             sqft: newOngoing.sqft?.trim() || undefined,
             about: newOngoing.about?.trim() || undefined,
             address: newOngoing.address?.trim() || undefined,
-            amenities: amenityList && amenityList.length > 0 ? amenityList : undefined,
+            amenities:
+              amenityList && amenityList.length > 0 ? amenityList : undefined,
             features:
               featureList.length > 0
                 ? featureList
@@ -449,11 +447,18 @@ export default function Properties() {
           <h2 className={styles.titleMain}>ONGOING PROJECT</h2>
           <span className={styles.accentBar} aria-hidden="true" />
           <p className={styles.subtitleMain}>
-            Your Next Big Opportunity for Enduring Growth, Lasting Prestige, and Assured Returns
+            Your Next Big Opportunity for Enduring Growth, Lasting Prestige, and
+            Assured Returns
           </p>
 
           {propertiesList.length > 1 && (
-            <div style={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "1.5rem",
+              }}
+            >
               <div
                 className={styles.filters}
                 role="tablist"
@@ -485,36 +490,42 @@ export default function Properties() {
                   (f) =>
                     f.toLowerCase().includes("integrated") ||
                     f.toLowerCase().includes("spread") ||
-                    f.toLowerCase().includes("acre")
+                    f.toLowerCase().includes("acre"),
                 ) ||
                 (property.area
                   ? `An integrated luxury hub spread over ${property.area}`
                   : "An integrated luxury hub spread over 10 acres");
 
-              const priceText = property.price?.toLowerCase().startsWith("starts")
+              const priceText = property.price
+                ?.toLowerCase()
+                .startsWith("starts")
                 ? property.price
                 : `Starts @ ${property.price || "40 Lakh*"}`;
 
               const configText = (() => {
                 const directMatch = property.features?.find(
                   (f) =>
-                    (f.toLowerCase().includes("1bhk") || f.toLowerCase().includes("have")) &&
+                    (f.toLowerCase().includes("1bhk") ||
+                      f.toLowerCase().includes("have")) &&
                     f.toLowerCase().includes("retails") &&
-                    f.toLowerCase().includes("studio")
+                    f.toLowerCase().includes("studio"),
                 );
                 if (directMatch) {
-                  return directMatch.startsWith("Have") ? directMatch : `Have ${directMatch}`;
+                  return directMatch.startsWith("Have")
+                    ? directMatch
+                    : `Have ${directMatch}`;
                 }
 
-                const configParts = property.features?.filter(
-                  (f) =>
-                    !f.toLowerCase().includes("integrated") &&
-                    !f.toLowerCase().includes("spread") &&
-                    !f.toLowerCase().includes("acre") &&
-                    !f.toLowerCase().includes("starts") &&
-                    !f.toLowerCase().includes("lakh") &&
-                    !f.toLowerCase().includes("facing")
-                ) || [];
+                const configParts =
+                  property.features?.filter(
+                    (f) =>
+                      !f.toLowerCase().includes("integrated") &&
+                      !f.toLowerCase().includes("spread") &&
+                      !f.toLowerCase().includes("acre") &&
+                      !f.toLowerCase().includes("starts") &&
+                      !f.toLowerCase().includes("lakh") &&
+                      !f.toLowerCase().includes("facing"),
+                  ) || [];
 
                 if (configParts.length > 0) {
                   let joined = configParts.join(", ");
@@ -540,11 +551,11 @@ export default function Properties() {
                 property.features?.find(
                   (f) =>
                     f.toLowerCase().includes("east-facing") ||
-                    f.toLowerCase().includes("facing")
+                    f.toLowerCase().includes("facing"),
                 ) || "* East-Facing Flats";
 
               const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(
-                `Hello Patliputra Group, I am interested in ${property.title} located at ${property.location}. Please share the brochure and current availability.`
+                `Hello Patliputra Group, I am interested in ${property.title} located at ${property.location}. Please share the brochure and current availability.`,
               )}`;
 
               const amenityList =
@@ -552,9 +563,12 @@ export default function Properties() {
                   ? property.amenities
                   : DEFAULT_AMENITIES;
 
-              const aboutText = property.about || property.description || DEFAULT_ABOUT;
+              const aboutText =
+                property.about || property.description || DEFAULT_ABOUT;
               const addressText = property.address || DEFAULT_ADDRESS;
-              const sqftText = property.sqft || "An integrated luxury hub spread over 10 acres sqft";
+              const sqftText =
+                property.sqft ||
+                "An integrated luxury hub spread over 10 acres sqft";
 
               return (
                 <article
@@ -583,11 +597,16 @@ export default function Properties() {
                   <div className={styles.horizontalContentCol}>
                     <div className={styles.cardWatermark} aria-hidden="true">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/img/logo_final.png" alt="Patliputra Group Emblem" />
+                      <img
+                        src="https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/logo%20and%20other/logo_final.png"
+                        alt="Patliputra Group Emblem"
+                      />
                     </div>
 
                     <div className={styles.horizontalHeaderGroup}>
-                      <h3 className={styles.horizontalTitle}>{property.title}</h3>
+                      <h3 className={styles.horizontalTitle}>
+                        {property.title}
+                      </h3>
                       <div className={styles.horizontalLocation}>
                         <svg
                           width="16"
@@ -607,15 +626,27 @@ export default function Properties() {
 
                     <div className={styles.horizontalHighlights}>
                       <div className={styles.highlightLine1}>
-                        <span className={styles.highlightHubText}>{hubText}</span>
-                        <span className={styles.highlightPriceText}>{priceText}</span>
+                        <span className={styles.highlightHubText}>
+                          {hubText}
+                        </span>
+                        <span className={styles.highlightPriceText}>
+                          {priceText}
+                        </span>
                       </div>
                       <div className={styles.highlightLine2}>
-                        <span className={styles.highlightConfigText}>{configText}</span>
-                        <span className={styles.highlightOrientText}>{orientText}</span>
+                        <span className={styles.highlightConfigText}>
+                          {configText}
+                        </span>
+                        <span className={styles.highlightOrientText}>
+                          {orientText}
+                        </span>
                       </div>
-                      {(Boolean(property.bedrooms && Number(property.bedrooms) > 0) ||
-                        Boolean(property.bathrooms && Number(property.bathrooms) > 0)) && (
+                      {(Boolean(
+                        property.bedrooms && Number(property.bedrooms) > 0,
+                      ) ||
+                        Boolean(
+                          property.bathrooms && Number(property.bathrooms) > 0,
+                        )) && (
                         <div
                           style={{
                             display: "inline-flex",
@@ -774,7 +805,7 @@ export default function Properties() {
           <div className={styles.deliveredGrid}>
             {filtered.map((property, idx) => {
               const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(
-                `Hello Patliputra Group, I am interested in ${property.title} located at ${property.location}. Please share the brochure and current availability.`
+                `Hello Patliputra Group, I am interested in ${property.title} located at ${property.location}. Please share the brochure and current availability.`,
               )}`;
 
               return (
@@ -818,17 +849,23 @@ export default function Properties() {
                     </p>
 
                     <p className={styles.deliveredDesc}>
-                      {property.description || property.features?.[0] || property.type}
+                      {property.description ||
+                        property.features?.[0] ||
+                        property.type}
                     </p>
 
                     <div className={styles.deliveredSpecsRow}>
                       <span>{property.area}</span>
-                      {property.bedrooms !== undefined && property.bedrooms !== null && Number(property.bedrooms) > 0 && (
-                        <span>{property.bedrooms} BHK</span>
-                      )}
-                      {property.bathrooms !== undefined && property.bathrooms !== null && Number(property.bathrooms) > 0 && (
-                        <span>{property.bathrooms} Baths</span>
-                      )}
+                      {property.bedrooms !== undefined &&
+                        property.bedrooms !== null &&
+                        Number(property.bedrooms) > 0 && (
+                          <span>{property.bedrooms} BHK</span>
+                        )}
+                      {property.bathrooms !== undefined &&
+                        property.bathrooms !== null &&
+                        Number(property.bathrooms) > 0 && (
+                          <span>{property.bathrooms} Baths</span>
+                        )}
                       <span style={{ color: "#1a1a2e", fontWeight: 700 }}>
                         {property.price}
                       </span>
@@ -840,7 +877,10 @@ export default function Properties() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className={styles.btnWhatsapp}
-                        style={{ padding: "0.42rem 0.85rem", fontSize: "0.78rem" }}
+                        style={{
+                          padding: "0.42rem 0.85rem",
+                          fontSize: "0.78rem",
+                        }}
                         aria-label={`WhatsApp about ${property.title}`}
                       >
                         <svg
@@ -858,7 +898,10 @@ export default function Properties() {
                       <button
                         type="button"
                         className={styles.btnViewDetails}
-                        style={{ padding: "0.42rem 0.85rem", fontSize: "0.78rem" }}
+                        style={{
+                          padding: "0.42rem 0.85rem",
+                          fontSize: "0.78rem",
+                        }}
                         onClick={() => handleOpenDetail(property)}
                       >
                         Details
@@ -880,7 +923,10 @@ export default function Properties() {
                           type="button"
                           onClick={() => handleOpenEdit(property)}
                           className={styles.btnAdminEdit}
-                          style={{ padding: "0.35rem 0.65rem", fontSize: "0.72rem" }}
+                          style={{
+                            padding: "0.35rem 0.65rem",
+                            fontSize: "0.72rem",
+                          }}
                         >
                           Edit
                         </button>
@@ -926,7 +972,10 @@ export default function Properties() {
                             type="button"
                             onClick={() => setConfirmDeleteId(property.id)}
                             className={styles.btnAdminRemove}
-                            style={{ padding: "0.35rem 0.65rem", fontSize: "0.72rem" }}
+                            style={{
+                              padding: "0.35rem 0.65rem",
+                              fontSize: "0.72rem",
+                            }}
                           >
                             Remove
                           </button>
@@ -955,7 +1004,8 @@ export default function Properties() {
                 marginBottom: "1rem",
               }}
             >
-              No ongoing projects found matching the filter &ldquo;{activeFilter}&rdquo;.
+              No ongoing projects found matching the filter &ldquo;
+              {activeFilter}&rdquo;.
             </p>
             <button
               type="button"
@@ -1307,7 +1357,9 @@ export default function Properties() {
                       onChange={(e) =>
                         setNewOngoing({
                           ...newOngoing,
-                          bedrooms: e.target.value ? Number(e.target.value) : "",
+                          bedrooms: e.target.value
+                            ? Number(e.target.value)
+                            : "",
                         })
                       }
                       style={{
@@ -1340,7 +1392,9 @@ export default function Properties() {
                       onChange={(e) =>
                         setNewOngoing({
                           ...newOngoing,
-                          bathrooms: e.target.value ? Number(e.target.value) : "",
+                          bathrooms: e.target.value
+                            ? Number(e.target.value)
+                            : "",
                         })
                       }
                       style={{
@@ -1354,7 +1408,6 @@ export default function Properties() {
                     />
                   </div>
                 </div>
-
 
                 <div>
                   <label
@@ -1489,7 +1542,10 @@ export default function Properties() {
                     placeholder="MEDITATION GARDEN, 24/7 SECURITY, CCTV SURVEILLANCE, SWIMMING POOL..."
                     value={newOngoing.amenities || ""}
                     onChange={(e) =>
-                      setNewOngoing({ ...newOngoing, amenities: e.target.value })
+                      setNewOngoing({
+                        ...newOngoing,
+                        amenities: e.target.value,
+                      })
                     }
                     style={{
                       width: "100%",
@@ -1902,7 +1958,9 @@ export default function Properties() {
                       onChange={(e) =>
                         setEditingProperty({
                           ...editingProperty,
-                          bedrooms: e.target.value ? Number(e.target.value) : undefined,
+                          bedrooms: e.target.value
+                            ? Number(e.target.value)
+                            : undefined,
                         })
                       }
                       style={{
@@ -1936,7 +1994,9 @@ export default function Properties() {
                       onChange={(e) =>
                         setEditingProperty({
                           ...editingProperty,
-                          bathrooms: e.target.value ? Number(e.target.value) : undefined,
+                          bathrooms: e.target.value
+                            ? Number(e.target.value)
+                            : undefined,
                         })
                       }
                       style={{
@@ -1950,7 +2010,6 @@ export default function Properties() {
                     />
                   </div>
                 </div>
-
 
                 <div>
                   <label
@@ -2089,7 +2148,9 @@ export default function Properties() {
                   <textarea
                     rows={4}
                     placeholder="Comprehensive overview of architecture, commercial highlights, connectivity..."
-                    value={editingProperty.about || editingProperty.description || ""}
+                    value={
+                      editingProperty.about || editingProperty.description || ""
+                    }
                     onChange={(e) =>
                       setEditingProperty({
                         ...editingProperty,
@@ -2232,7 +2293,14 @@ export default function Properties() {
                 &times;
               </button>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.75rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginBottom: "0.75rem",
+                }}
+              >
                 <span
                   style={{
                     background: "rgba(222, 179, 96, 0.15)",
@@ -2271,7 +2339,14 @@ export default function Properties() {
                   marginBottom: "1.5rem",
                 }}
               >
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#deb360" strokeWidth="2.2">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#deb360"
+                  strokeWidth="2.2"
+                >
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
@@ -2312,7 +2387,14 @@ export default function Properties() {
                 }}
               >
                 <div>
-                  <span style={{ display: "block", fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>
+                  <span
+                    style={{
+                      display: "block",
+                      fontSize: "0.72rem",
+                      color: "rgba(255,255,255,0.5)",
+                      textTransform: "uppercase",
+                    }}
+                  >
                     Starting Price
                   </span>
                   <strong style={{ fontSize: "1.1rem", color: "#deb360" }}>
@@ -2320,36 +2402,68 @@ export default function Properties() {
                   </strong>
                 </div>
                 <div>
-                  <span style={{ display: "block", fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>
+                  <span
+                    style={{
+                      display: "block",
+                      fontSize: "0.72rem",
+                      color: "rgba(255,255,255,0.5)",
+                      textTransform: "uppercase",
+                    }}
+                  >
                     Project Area
                   </span>
                   <strong style={{ fontSize: "1rem", color: "#ffffff" }}>
                     {detailProperty.area}
                   </strong>
                 </div>
-                {detailProperty.bedrooms !== undefined && detailProperty.bedrooms !== null && Number(detailProperty.bedrooms) > 0 && (
-                  <div>
-                    <span style={{ display: "block", fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>
-                      Bedrooms
-                    </span>
-                    <strong style={{ fontSize: "0.95rem", color: "#ffffff" }}>
-                      {detailProperty.bedrooms} BHK
-                    </strong>
-                  </div>
-                )}
-                {detailProperty.bathrooms !== undefined && detailProperty.bathrooms !== null && Number(detailProperty.bathrooms) > 0 && (
-                  <div>
-                    <span style={{ display: "block", fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>
-                      Bathrooms
-                    </span>
-                    <strong style={{ fontSize: "0.95rem", color: "#ffffff" }}>
-                      {detailProperty.bathrooms} Baths
-                    </strong>
-                  </div>
-                )}
+                {detailProperty.bedrooms !== undefined &&
+                  detailProperty.bedrooms !== null &&
+                  Number(detailProperty.bedrooms) > 0 && (
+                    <div>
+                      <span
+                        style={{
+                          display: "block",
+                          fontSize: "0.72rem",
+                          color: "rgba(255,255,255,0.5)",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        Bedrooms
+                      </span>
+                      <strong style={{ fontSize: "0.95rem", color: "#ffffff" }}>
+                        {detailProperty.bedrooms} BHK
+                      </strong>
+                    </div>
+                  )}
+                {detailProperty.bathrooms !== undefined &&
+                  detailProperty.bathrooms !== null &&
+                  Number(detailProperty.bathrooms) > 0 && (
+                    <div>
+                      <span
+                        style={{
+                          display: "block",
+                          fontSize: "0.72rem",
+                          color: "rgba(255,255,255,0.5)",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        Bathrooms
+                      </span>
+                      <strong style={{ fontSize: "0.95rem", color: "#ffffff" }}>
+                        {detailProperty.bathrooms} Baths
+                      </strong>
+                    </div>
+                  )}
                 {detailProperty.type && (
                   <div>
-                    <span style={{ display: "block", fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}>
+                    <span
+                      style={{
+                        display: "block",
+                        fontSize: "0.72rem",
+                        color: "rgba(255,255,255,0.5)",
+                        textTransform: "uppercase",
+                      }}
+                    >
                       Configuration
                     </span>
                     <strong style={{ fontSize: "0.88rem", color: "#ffffff" }}>
@@ -2386,7 +2500,13 @@ export default function Properties() {
                   >
                     SQFT
                   </span>
-                  <span style={{ fontSize: "0.9rem", color: "#ffffff", fontWeight: 600 }}>
+                  <span
+                    style={{
+                      fontSize: "0.9rem",
+                      color: "#ffffff",
+                      fontWeight: 600,
+                    }}
+                  >
                     {detailProperty.sqft || `${detailProperty.area} sqft`}
                   </span>
                 </div>
@@ -2394,36 +2514,92 @@ export default function Properties() {
 
               {/* About Property */}
               <div style={{ marginBottom: "1.25rem" }}>
-                <h4 style={{ fontSize: "0.88rem", letterSpacing: "1px", textTransform: "uppercase", color: "#deb360", marginBottom: "0.5rem" }}>
+                <h4
+                  style={{
+                    fontSize: "0.88rem",
+                    letterSpacing: "1px",
+                    textTransform: "uppercase",
+                    color: "#deb360",
+                    marginBottom: "0.5rem",
+                  }}
+                >
                   About Property
                 </h4>
-                <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.6, margin: 0 }}>
-                  {detailProperty.about || detailProperty.description || DEFAULT_ABOUT}
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "rgba(255,255,255,0.75)",
+                    lineHeight: 1.6,
+                    margin: 0,
+                  }}
+                >
+                  {detailProperty.about ||
+                    detailProperty.description ||
+                    DEFAULT_ABOUT}
                 </p>
               </div>
 
               {/* Property Address */}
               <div style={{ marginBottom: "1.25rem" }}>
-                <h4 style={{ fontSize: "0.88rem", letterSpacing: "1px", textTransform: "uppercase", color: "#deb360", marginBottom: "0.5rem" }}>
+                <h4
+                  style={{
+                    fontSize: "0.88rem",
+                    letterSpacing: "1px",
+                    textTransform: "uppercase",
+                    color: "#deb360",
+                    marginBottom: "0.5rem",
+                  }}
+                >
                   Property Address
                 </h4>
-                <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.75)", margin: 0 }}>
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: "rgba(255,255,255,0.75)",
+                    margin: 0,
+                  }}
+                >
                   {detailProperty.address || DEFAULT_ADDRESS}
                 </p>
               </div>
 
               {/* Amenities */}
               <div style={{ marginBottom: "1.5rem" }}>
-                <h4 style={{ fontSize: "0.88rem", letterSpacing: "1px", textTransform: "uppercase", color: "#deb360", marginBottom: "0.75rem" }}>
+                <h4
+                  style={{
+                    fontSize: "0.88rem",
+                    letterSpacing: "1px",
+                    textTransform: "uppercase",
+                    color: "#deb360",
+                    marginBottom: "0.75rem",
+                  }}
+                >
                   Amenities
                 </h4>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.55rem" }}>
-                  {(detailProperty.amenities || DEFAULT_AMENITIES).map((amenity, i) => (
-                    <div key={i} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.82rem", color: "rgba(255,255,255,0.85)" }}>
-                      <span style={{ color: "#deb360" }}>⊙</span>
-                      <span>{amenity}</span>
-                    </div>
-                  ))}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "0.55rem",
+                  }}
+                >
+                  {(detailProperty.amenities || DEFAULT_AMENITIES).map(
+                    (amenity, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          fontSize: "0.82rem",
+                          color: "rgba(255,255,255,0.85)",
+                        }}
+                      >
+                        <span style={{ color: "#deb360" }}>⊙</span>
+                        <span>{amenity}</span>
+                      </div>
+                    ),
+                  )}
                 </div>
               </div>
 
@@ -2439,13 +2615,20 @@ export default function Properties() {
               >
                 <a
                   href={`https://wa.me/919876543210?text=${encodeURIComponent(
-                    `Hello Patliputra Group, I am interested in ${detailProperty.title} located at ${detailProperty.location}. Please share the brochure and current availability.`
+                    `Hello Patliputra Group, I am interested in ${detailProperty.title} located at ${detailProperty.location}. Please share the brochure and current availability.`,
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.btnWhatsapp}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
                   </svg>
                   Chat on WhatsApp

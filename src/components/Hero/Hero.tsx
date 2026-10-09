@@ -3,6 +3,7 @@ import { Playfair_Display, Montserrat } from "next/font/google";
 import { useEffect, useRef } from "react";
 import styles from "./Hero.module.css";
 import HighlightsCarousel from "../HighlightsCarousel/HighlightsCarousel";
+
 const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["600", "700"],
@@ -52,7 +53,7 @@ export default function Hero() {
           <div className={styles.legacyIcon}>
             <span className={styles.crownIcon}>
               <img
-                src="/img/patliputra_signature_park.png"
+                src="https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/logo%20and%20other/patliputra_signature_park.png"
                 alt="patliputra_signature_park"
                 className="h-[90px] w-[90px] shrink-0 object-contain md:h-[110px] md:w-[110px] lg:h-[200px] lg:w-[160px]"
               />

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./Footer.module.css";
-import initialNewsData from "@/data/newsData.json";
 
 interface NewsItem {
   id: string;
@@ -20,15 +19,13 @@ export default function Footer() {
   const pathname = usePathname();
 
   // Extract 2 latest news items from media
-  const [latestPosts, setLatestPosts] = useState<NewsItem[]>(
-    ((initialNewsData as NewsItem[]).slice(0, 2)) || [],
-  );
+  const [latestPosts, setLatestPosts] = useState<NewsItem[]>([]);
 
   useEffect(() => {
     fetch("/api/admin/news")
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setLatestPosts(data.slice(0, 2));
         }
       })
@@ -60,7 +57,7 @@ export default function Footer() {
             >
               <span className={styles.logoIcon}>
                 <img
-                  src="/img/logo_final.png"
+                  src="https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/logo%20and%20other/logo_final.png"
                   alt="logo"
                   height={"60px"}
                   width={"60px"}

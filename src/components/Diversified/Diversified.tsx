@@ -182,10 +182,22 @@ const SECTORS: BusinessSector[] = [
 type FilterType = "all" | "hospitality" | "healthcare" | "education";
 
 export default function Diversified() {
+  const [sectors, setSectors] = useState<BusinessSector[]>(SECTORS);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [selectedSector, setSelectedSector] = useState<BusinessSector | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/diversified")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setSectors(data);
+        }
+      })
+      .catch((err) => console.error("Error fetching diversified sectors:", err));
+  }, []);
 
   // Drag / swipe states
   const [isDragging, setIsDragging] = useState(false);
@@ -195,9 +207,9 @@ export default function Diversified() {
 
   // Filtered items
   const filteredSectors = useMemo(() => {
-    if (activeFilter === "all") return SECTORS;
-    return SECTORS.filter((s) => s.categoryFilter === activeFilter);
-  }, [activeFilter]);
+    if (activeFilter === "all") return sectors;
+    return sectors.filter((s) => s.categoryFilter === activeFilter);
+  }, [activeFilter, sectors]);
 
   // Update visible items count based on responsive breakpoint
   const updateVisibleCount = useCallback(() => {

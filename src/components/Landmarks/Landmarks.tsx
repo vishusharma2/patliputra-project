@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import styles from "./Landmarks.module.css";
 
 interface Landmark {
+  id?: string;
+  order?: number;
   title: string;
   badge: string;
   image: string;
@@ -13,32 +15,49 @@ const landmarks: Landmark[] = [
   {
     title: "5 Star Hotel in Mussoorie",
     badge: "5 Star Hotel",
-    image: "/img/landmarks/Mussoorie_Hotel.png",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/Landmarks/Mussoorie_Hotel.png",
   },
   {
     title: "5 Star Hotel in Ranchi",
     badge: "5 Star Hotel",
-    image: "/img/landmarks/Ranchi_Hotel.png",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/Landmarks/Ranchi_Hotel.png",
   },
   {
     title: "Patliputra Park in Patna - Saguna More",
     badge: "Park",
-    image: "/img/landmarks/Patliputra_Park.png",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/Landmarks/Patliputra_Park.png",
   },
   {
     title: "5 Star Hotel in Greater Noida",
     badge: "5 Star Hotel",
-    image: "/img/landmarks/GreaterNoida_Hotel.png",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/Landmarks/GreaterNoida_Hotel.png",
   },
 ];
 
 export default function Landmarks() {
+  const [landmarkList, setLandmarkList] = useState<Landmark[]>(landmarks);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(2);
   const [paused, setPaused] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
+
+  // Fetch dynamic landmarks from Supabase admin API
+  useEffect(() => {
+    fetch("/api/admin/landmarks")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setLandmarkList(data);
+        }
+      })
+      .catch((err) => console.error("Error fetching landmarks:", err));
+  }, []);
 
   // Responsive items count
   const updateVisibleCount = useCallback(() => {
@@ -58,8 +77,8 @@ export default function Landmarks() {
 
   // Max starting index
   const maxIndex = useMemo(() => {
-    return Math.max(0, landmarks.length - visibleCount);
-  }, [visibleCount]);
+    return Math.max(0, landmarkList.length - visibleCount);
+  }, [landmarkList.length, visibleCount]);
 
   // Clamp current index if bounds change
   useEffect(() => {
@@ -211,12 +230,12 @@ export default function Landmarks() {
                 isDragging ? styles.trackDragging : ""
               }`}
             >
-              {landmarks.map((l, index) => (
+              {landmarkList.map((l, index) => (
                 <div
-                  key={l.title}
+                  key={l.id || l.title || index}
                   className={styles.slideItem}
                   aria-roledescription="slide"
-                  aria-label={`${index + 1} of ${landmarks.length}: ${l.title}`}
+                  aria-label={`${index + 1} of ${landmarkList.length}: ${l.title}`}
                 >
                   <article className={styles.card}>
                     <div className={styles.imageBox}>

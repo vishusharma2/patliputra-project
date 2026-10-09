@@ -14,19 +14,71 @@ export interface CarouselSlide {
  * Any missing image falls back to an elegant gold/navy placeholder.
  */
 const DEFAULT_SLIDES: CarouselSlide[] = [
-  { title: "Residences", image: "/carousel/main-slider_slide1.webp" },
-  { title: "Office Space", image: "/carousel/main-slider_slide2.webp" },
-  { title: "Studio", image: "/carousel/main-slider_slide3.webp" },
-  { title: "IT Park", image: "/carousel/main-slider_slide4.webp" },
-  { title: "World Class Retail", image: "/carousel/main-slider_slide5.webp" },
-  { title: "GYM", image: "/carousel/main-slider_slide6.webp" },
-  { title: "Club House", image: "/carousel/main-slider_slide7.webp" },
-  { title: "World Class Retail", image: "/carousel/main-slider_slide8.webp" },
-  { title: "Restaurant", image: "/carousel/main-slider_slide9.webp" },
-  { title: "Salon & Spa", image: "/carousel/main-slider_slide10.webp" },
-  { title: "Swimming Pool", image: "/carousel/main-slider_slide11.webp" },
-  { title: "Bar & Restaurant", image: "/carousel/main-slider_slide12.webp" },
-  { title: "Ample Parking", image: "/carousel/main-slider_slide13.webp" },
+  {
+    title: "Residences",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide1.webp",
+  },
+  {
+    title: "Office Space",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide2.webp",
+  },
+  {
+    title: "Studio",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide3.webp",
+  },
+  {
+    title: "IT Park",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide4.webp",
+  },
+  {
+    title: "World Class Retail",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide5.webp",
+  },
+  {
+    title: "GYM",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide6.webp",
+  },
+  {
+    title: "Club House",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide7.webp",
+  },
+  {
+    title: "World Class Retail",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide8.webp",
+  },
+  {
+    title: "Restaurant",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide9.webp",
+  },
+  {
+    title: "Salon & Spa",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide10.webp",
+  },
+  {
+    title: "Swimming Pool",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide11.webp",
+  },
+  {
+    title: "Bar & Restaurant",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide12.webp",
+  },
+  {
+    title: "Ample Parking",
+    image:
+      "https://mbfrobyozijbwglauqop.supabase.co/storage/v1/object/public/project%20images/carousel/main-slider_slide13.webp",
+  },
 ];
 
 const AUTOPLAY_MS = 4000;
