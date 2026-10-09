@@ -70,7 +70,7 @@ export default function Navbar() {
           </span>
           <div className={styles.logoText}>
             <span className={styles.logoName}>PATLIPUTRA</span>
-            <span className={styles.logoSub}>GROUP &bull; BIHAR</span>
+            <span className={styles.logoSub}>GROUP</span>
           </div>
         </Link>
 

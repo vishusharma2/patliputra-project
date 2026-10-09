@@ -19,9 +19,9 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
   const pathname = usePathname();
 
-  // Extract only the latest news from media
-  const [latestPost, setLatestPost] = useState<NewsItem | null>(
-    (initialNewsData[0] as NewsItem) || null
+  // Extract 2 latest news items from media
+  const [latestPosts, setLatestPosts] = useState<NewsItem[]>(
+    ((initialNewsData as NewsItem[]).slice(0, 2)) || [],
   );
 
   useEffect(() => {
@@ -29,10 +29,12 @@ export default function Footer() {
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          setLatestPost(data[0]);
+          setLatestPosts(data.slice(0, 2));
         }
       })
-      .catch((err) => console.error("Error fetching latest news for footer:", err));
+      .catch((err) =>
+        console.error("Error fetching latest news for footer:", err),
+      );
   }, []);
 
   const handleLinkClick = (href: string) => {
@@ -71,7 +73,7 @@ export default function Footer() {
             </Link>
 
             <p className={styles.brandDesc}>
-              Shaping Patna&apos;s urban skyline for over 25 years. Patliputra
+              Shaping Patna&apos;s urban skyline for over 35 years. Patliputra
               Group represents uncompromising structural excellence, timeless
               aesthetics, and the highest standards of transparency in
               Bihar&apos;s real estate ecosystem.
@@ -128,40 +130,46 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Recent News - Only Latest */}
+          {/* Recent News - 2 Latest */}
           <div className={styles.col}>
             <h4 className={styles.colTitle}>RECENT NEWS</h4>
-            {latestPost ? (
-              <article className={styles.postItem}>
-                <Link
-                  href="/media"
-                  className={styles.postThumbLink}
-                  onClick={() => handleLinkClick("/media")}
-                >
-                  <img
-                    src={latestPost.image}
-                    alt={latestPost.englishTitle || latestPost.headline}
-                    className={styles.postThumb}
-                    width={56}
-                    height={56}
-                    loading="lazy"
-                  />
-                </Link>
-                <div className={styles.postContent}>
-                  <span className={styles.postDate}>
-                    {latestPost.date || "RECENT COVERAGE"}
-                  </span>
-                  <Link
-                    href="/media"
-                    className={styles.postTitle}
-                    onClick={() => handleLinkClick("/media")}
-                  >
-                    {latestPost.englishTitle || latestPost.headline}
-                  </Link>
-                </div>
-              </article>
+            {latestPosts && latestPosts.length > 0 ? (
+              <div className={styles.postsList}>
+                {latestPosts.map((post) => (
+                  <article key={post.id} className={styles.postItem}>
+                    <Link
+                      href="/media"
+                      className={styles.postThumbLink}
+                      onClick={() => handleLinkClick("/media")}
+                    >
+                      <img
+                        src={post.image}
+                        alt={post.englishTitle || post.headline}
+                        className={styles.postThumb}
+                        width={56}
+                        height={56}
+                        loading="lazy"
+                      />
+                    </Link>
+                    <div className={styles.postContent}>
+                      <span className={styles.postDate}>
+                        {post.date || "RECENT COVERAGE"}
+                      </span>
+                      <Link
+                        href="/media"
+                        className={styles.postTitle}
+                        onClick={() => handleLinkClick("/media")}
+                      >
+                        {post.englishTitle || post.headline}
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
             ) : (
-              <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.6)" }}>
+              <p
+                style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.6)" }}
+              >
                 No recent news published yet.
               </p>
             )}

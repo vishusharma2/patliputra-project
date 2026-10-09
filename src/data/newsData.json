@@ -52,39 +52,5 @@
       "Chi V प्राइम लोकेशन",
       "विश्वस्तरीय सुविधाएं"
     ]
-  },
-  {
-    "id": "m1",
-    "category": "release",
-    "source": "HINDUSTAN TIMES",
-    "date": "MARCH 2024",
-    "headline": "Patliputra Group Unveils Bihar's Tallest Luxury Twin Towers on Bailey Road",
-    "englishTitle": "Bihar's Tallest Luxury Twin Towers on Bailey Road",
-    "excerpt": "Hon'ble dignitaries graced the foundation stone ceremony for Patliputra Twin Towers, marking a milestone in Bihar's urban development with earthquake-resistant engineering and 40+ resort amenities.",
-    "image": "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800&q=80",
-    "tag": "PRESS RELEASE",
-    "isClipping": false,
-    "highlights": [
-      "Bailey Road, Patna",
-      "Earthquake Zone V RCC",
-      "Luxury High-Rise"
-    ]
-  },
-  {
-    "id": "m2",
-    "category": "release",
-    "source": "NATIONAL REAL ESTATE CONCLAVE",
-    "date": "JANUARY 2024",
-    "headline": "Real Estate Excellence Award 2024 Conferred to Patliputra Group for On-Time Delivery",
-    "englishTitle": "Industry Recognition for On-Time Possession & Transparency",
-    "excerpt": "Recognized by the National Real Estate Conclave for setting industry benchmarks in legal transparency, structural quality, and 100% on-time project delivery over three decades of excellence.",
-    "image": "https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=800&q=80",
-    "tag": "AWARDS & HONOURS",
-    "isClipping": false,
-    "highlights": [
-      "Excellence Award 2024",
-      "100% RERA Compliance",
-      "Customer Trust"
-    ]
   }
 ]

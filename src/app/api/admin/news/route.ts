@@ -28,7 +28,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { article } = body;
+    const article = body.article || body;
 
     if (!article || (!article.headline && !article.englishTitle)) {
       return NextResponse.json(
@@ -75,7 +75,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    const { article } = body;
+    const article = body.article || body;
 
     if (!article || !article.id) {
       return NextResponse.json(

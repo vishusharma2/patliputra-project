@@ -4,6 +4,7 @@ import { useState, useEffect, FormEvent, KeyboardEvent } from "react";
 import Link from "next/link";
 import styles from "./AdminLogin.module.css";
 import initialData from "@/data/projectsData.json";
+import initialNewsData from "@/data/newsData.json";
 
 // Admin default credentials for demonstration & testing
 const DEMO_ADMIN_ID = "admin@patliputragroup.com";
@@ -38,6 +39,39 @@ interface OngoingProject {
   amenities?: string[];
   features: string[];
 }
+
+interface NewsArticle {
+  id: string;
+  category: "clipping" | "release";
+  source: string;
+  date: string;
+  headline: string;
+  englishTitle?: string;
+  excerpt: string;
+  image: string;
+  tag: string;
+  highlights?: string[];
+  isClipping?: boolean;
+}
+
+const NEWS_PRESET_IMAGES = [
+  {
+    name: "Clipping 1: Manoj Tiwari Inauguration",
+    url: "/img/news/delivered_news1.webp",
+  },
+  {
+    name: "Clipping 2: 50L Sq. Ft. Delivery",
+    url: "/img/news/delivered_news2.webp",
+  },
+  {
+    name: "Clipping 3: Strategic Chi V Location",
+    url: "/img/news/delivered_news4.webp",
+  },
+  {
+    name: "Signature Park Project Overview",
+    url: "/img/signature_park.jpg",
+  },
+];
 
 const DELIVERED_PRESET_IMAGES = [
   { name: "Satyam Apartment", url: "/img/delivered/satyam.webp" },
@@ -96,7 +130,7 @@ export default function PatliputraLoginPage() {
 
   // Project Management State
   const [activeTab, setActiveTab] = useState<
-    "delivered" | "ongoing" | "overview"
+    "delivered" | "ongoing" | "overview" | "news"
   >("delivered");
   const [deliveredProjects, setDeliveredProjects] = useState<
     DeliveredProject[]
@@ -104,10 +138,35 @@ export default function PatliputraLoginPage() {
   const [ongoingProjects, setOngoingProjects] = useState<OngoingProject[]>(
     initialData.ongoing || [],
   );
+  const [newsArticles, setNewsArticles] = useState<NewsArticle[]>(
+    (initialNewsData as NewsArticle[]) || [],
+  );
 
-  // Modals for Adding Projects
+  // Modals for Adding Projects & News
   const [showAddDeliveredModal, setShowAddDeliveredModal] = useState(false);
   const [showAddOngoingModal, setShowAddOngoingModal] = useState(false);
+  const [showAddNewsModal, setShowAddNewsModal] = useState(false);
+  const [showEditNewsModal, setShowEditNewsModal] = useState(false);
+  const [editingNews, setEditingNews] = useState<NewsArticle | null>(null);
+  const [editingNewsHighlightsStr, setEditingNewsHighlightsStr] = useState("");
+  const [confirmDeleteNewsId, setConfirmDeleteNewsId] = useState<string | null>(
+    null,
+  );
+
+  // Add News Form State
+  const [newNews, setNewNews] = useState({
+    category: "clipping" as "clipping" | "release",
+    source: "NATIONAL PRESS & DAINIK JAGRAN",
+    date: "RECENT COVERAGE",
+    headline: "",
+    englishTitle: "",
+    excerpt: "",
+    image: "/img/news/delivered_news1.webp",
+    tag: "NEWSPAPER CLIPPING",
+    highlights: "उद्घाटन: सांसद मनोज तिवारी, Chi V ग्रेटर नोएडा, 12% अश्योर्ड रिटर्न",
+    isClipping: true,
+  });
+
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Add Delivered Form State
@@ -181,7 +240,7 @@ export default function PatliputraLoginPage() {
     }
   }, []);
 
-  // Fetch latest projects data whenever authenticated
+  // Fetch latest projects and news data whenever authenticated
   useEffect(() => {
     if (isAuthenticated) {
       fetch("/api/admin/projects")
@@ -195,6 +254,17 @@ export default function PatliputraLoginPage() {
         })
         .catch((err) =>
           console.error("Error fetching projects in admin console:", err),
+        );
+
+      fetch("/api/admin/news")
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setNewsArticles(data);
+          }
+        })
+        .catch((err) =>
+          console.error("Error fetching news in admin console:", err),
         );
     }
   }, [isAuthenticated]);
@@ -609,6 +679,165 @@ export default function PatliputraLoginPage() {
     }
   };
 
+  // Add News Article Handler
+  const handleCreateNews = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!newNews.headline.trim()) {
+      alert("Please enter a news headline.");
+      return;
+    }
+
+    const highlightsList = newNews.highlights
+      ? newNews.highlights
+          .split(",")
+          .map((h) => h.trim())
+          .filter(Boolean)
+      : undefined;
+
+    const articlePayload: NewsArticle = {
+      id: `news-${Date.now()}`,
+      category: newNews.category,
+      source: newNews.source.trim() || "PATLIPUTRA MEDIA DESK",
+      date: newNews.date.trim() || "LATEST NEWS",
+      headline: newNews.headline.trim(),
+      englishTitle: newNews.englishTitle.trim() || undefined,
+      excerpt: newNews.excerpt.trim(),
+      image: newNews.image || "/img/news/delivered_news1.webp",
+      tag:
+        newNews.tag.trim() ||
+        (newNews.category === "clipping"
+          ? "NEWSPAPER CLIPPING"
+          : "PRESS RELEASE"),
+      highlights:
+        highlightsList && highlightsList.length > 0
+          ? highlightsList
+          : undefined,
+      isClipping: newNews.isClipping,
+    };
+
+    try {
+      const res = await fetch("/api/admin/news", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(articlePayload),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setNewsArticles(data.data);
+        setShowAddNewsModal(false);
+        setNewNews({
+          category: "clipping",
+          source: "NATIONAL PRESS & DAINIK JAGRAN",
+          date: "RECENT COVERAGE",
+          headline: "",
+          englishTitle: "",
+          excerpt: "",
+          image: "/img/news/delivered_news1.webp",
+          tag: "NEWSPAPER CLIPPING",
+          highlights:
+            "उद्घाटन: सांसद मनोज तिवारी, Chi V ग्रेटर नोएडा, 12% अश्योर्ड रिटर्न",
+          isClipping: true,
+        });
+        setToastMessage(
+          `✓ News article "${articlePayload.headline.slice(0, 35)}..." published & updated as latest story!`,
+        );
+      } else {
+        alert(data.error || "Failed to publish news article");
+      }
+    } catch (err) {
+      console.error("Error creating news article:", err);
+      alert("Network error publishing news article");
+    }
+  };
+
+  // Open Edit News Modal
+  const handleOpenEditNews = (item: NewsArticle) => {
+    setEditingNews({ ...item });
+    setEditingNewsHighlightsStr(
+      item.highlights && Array.isArray(item.highlights)
+        ? item.highlights.join(", ")
+        : "",
+    );
+    setShowEditNewsModal(true);
+  };
+
+  // Submit Edit News Article
+  const handleUpdateNews = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingNews || !editingNews.headline.trim()) {
+      alert("Please enter a valid headline.");
+      return;
+    }
+
+    const highlightsList = editingNewsHighlightsStr
+      ? editingNewsHighlightsStr
+          .split(",")
+          .map((h) => h.trim())
+          .filter(Boolean)
+      : undefined;
+
+    const updatedItem: NewsArticle = {
+      ...editingNews,
+      headline: editingNews.headline.trim(),
+      source: editingNews.source.trim(),
+      date: editingNews.date.trim(),
+      englishTitle: editingNews.englishTitle?.trim() || undefined,
+      excerpt: editingNews.excerpt.trim(),
+      tag: editingNews.tag.trim(),
+      highlights:
+        highlightsList && highlightsList.length > 0
+          ? highlightsList
+          : undefined,
+    };
+
+    try {
+      const res = await fetch("/api/admin/news", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedItem),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setNewsArticles(data.data);
+        setShowEditNewsModal(false);
+        setEditingNews(null);
+        setToastMessage(`✓ News article updated successfully!`);
+      } else {
+        alert(data.error || "Failed to update news article");
+      }
+    } catch (err) {
+      console.error("Error updating news article:", err);
+      alert("Network error updating news article");
+    }
+  };
+
+  // Delete News Article Handler
+  const handleDeleteNews = async (id: string, headline?: string) => {
+    try {
+      const res = await fetch(
+        `/api/admin/news?id=${encodeURIComponent(id)}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setNewsArticles(data.data);
+        setToastMessage(
+          `✓ News article "${(headline || id).slice(0, 35)}..." removed successfully.`,
+        );
+      } else {
+        alert(data.error || "Failed to remove news article");
+      }
+    } catch (err) {
+      console.error("Error deleting news article:", err);
+      alert("Network error deleting news article");
+    }
+  };
+
   return (
     <div className={styles.viewport}>
       {/* Dynamic Background Atmosphere */}
@@ -649,7 +878,13 @@ export default function PatliputraLoginPage() {
       </header>
 
       {/* Main Container */}
-      <main className={styles.mainContainer}>
+      <main
+        className={
+          isAuthenticated
+            ? styles.mainContainerAuth
+            : styles.mainContainer
+        }
+      >
         {!isAuthenticated ? (
           /* ================= LOGIN FORM ================= */
           <div
@@ -939,6 +1174,11 @@ export default function PatliputraLoginPage() {
                         Live Sync Active
                       </strong>
                     </span>
+                    <span className={styles.dashHeaderStatsBadge}>
+                      {deliveredProjects.length} Delivered &bull;{" "}
+                      {ongoingProjects.length} Ongoing &bull;{" "}
+                      {newsArticles.length} News
+                    </span>
                   </div>
                 </div>
               </div>
@@ -999,6 +1239,19 @@ export default function PatliputraLoginPage() {
                 <span>Ongoing Developments</span>
                 <span className={styles.tabCountBadge}>
                   {ongoingProjects.length}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === "news"}
+                className={`${styles.tabBtn} ${activeTab === "news" ? styles.tabBtnActive : ""}`}
+                onClick={() => setActiveTab("news")}
+              >
+                <span>News &amp; Media</span>
+                <span className={styles.tabCountBadge}>
+                  {newsArticles.length}
                 </span>
               </button>
 
@@ -1403,6 +1656,254 @@ export default function PatliputraLoginPage() {
                   >
                     View Live Website View
                   </Link>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 4: NEWS & MEDIA COVERAGE */}
+            {activeTab === "news" && (
+              <div>
+                <div className={styles.toolbarRow}>
+                  <div className={styles.toolbarTitle}>
+                    <span>News &amp; Media Coverage Directory</span>
+                    <span className={styles.tabCountBadge}>
+                      {newsArticles.length} Published
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.addProjectBtn}
+                    onClick={() => setShowAddNewsModal(true)}
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    >
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    <span>Publish News Article</span>
+                  </button>
+                </div>
+
+                {/* Automated Multi-Channel Live Sync Banner */}
+                <div className={styles.liveSyncBanner}>
+                  <div className={styles.liveSyncInfo}>
+                    <div className={styles.liveSyncIconWrap}>
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                    </div>
+                    <div className={styles.liveSyncText}>
+                      <strong>Automated Multi-Channel Sync:</strong> The top 2
+                      news articles in this directory are live-extracted into the
+                      global website <strong>Footer</strong>, while all published
+                      items appear with high-res clipping zoom on the public{" "}
+                      <strong>/media</strong> portal.
+                    </div>
+                  </div>
+                  <div className={styles.liveSyncLinks}>
+                    <Link
+                      href="/media"
+                      target="_blank"
+                      className={styles.liveSyncLink}
+                    >
+                      View Live /media Page ↗
+                    </Link>
+                    <Link
+                      href="/#contact"
+                      target="_blank"
+                      className={styles.liveSyncLink}
+                    >
+                      Inspect Footer ↗
+                    </Link>
+                  </div>
+                </div>
+
+                <div className={styles.projectsGrid}>
+                  {newsArticles.map((item, index) => (
+                    <div key={item.id || index} className={styles.projectCard}>
+                      <div className={styles.cardMedia}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={item.image}
+                          alt={item.headline}
+                          loading="lazy"
+                        />
+                        <span
+                          className={`${styles.cardStatusPill} ${
+                            index === 0
+                              ? styles.cardStatusTopStory
+                              : index === 1
+                                ? styles.cardStatusSecondStory
+                                : ""
+                          }`}
+                        >
+                          {index === 0
+                            ? "★ TOP STORY (FOOTER #1)"
+                            : index === 1
+                              ? "★ LATEST (FOOTER #2)"
+                              : item.category === "clipping"
+                                ? "Print Clipping"
+                                : "Press Release"}
+                        </span>
+                      </div>
+                      <div className={styles.cardBody}>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            fontSize: "0.72rem",
+                            color: "#deb360",
+                            fontWeight: 600,
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            marginBottom: "0.35rem",
+                          }}
+                        >
+                          <span>{item.source}</span>
+                          <span style={{ color: "rgba(255,255,255,0.45)" }}>
+                            {item.date}
+                          </span>
+                        </div>
+                        <h3
+                          className={styles.cardTitle}
+                          style={{ fontSize: "0.98rem", lineHeight: "1.4" }}
+                        >
+                          {item.headline}
+                        </h3>
+                        {item.englishTitle && (
+                          <div
+                            style={{
+                              fontSize: "0.8rem",
+                              color: "rgba(255, 255, 255, 0.7)",
+                              fontStyle: "italic",
+                              marginBottom: "0.5rem",
+                            }}
+                          >
+                            {item.englishTitle}
+                          </div>
+                        )}
+                        <p
+                          className={styles.cardDescText}
+                          style={{ lineClamp: 3 }}
+                        >
+                          {item.excerpt}
+                        </p>
+                        {item.highlights && item.highlights.length > 0 && (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: "4px",
+                              marginTop: "0.5rem",
+                              marginBottom: "0.5rem",
+                            }}
+                          >
+                            {item.highlights.slice(0, 3).map((h, i) => (
+                              <span
+                                key={i}
+                                style={{
+                                  fontSize: "0.7rem",
+                                  padding: "2px 6px",
+                                  borderRadius: "4px",
+                                  background: "rgba(255,255,255,0.06)",
+                                  color: "rgba(255,255,255,0.7)",
+                                }}
+                              >
+                                {h}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <div className={styles.cardFooterAction}>
+                          <span
+                            style={{
+                              fontSize: "0.72rem",
+                              color: "rgba(255,255,255,0.4)",
+                            }}
+                          >
+                            {item.tag || "NEWS"}
+                          </span>
+                          <div className={styles.cardActionBtns}>
+                            <button
+                              type="button"
+                              className={styles.editCardBtn}
+                              onClick={() => handleOpenEditNews(item)}
+                              title="Edit news article"
+                            >
+                              <svg
+                                width="13"
+                                height="13"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.2"
+                              >
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                              </svg>
+                              <span>Edit</span>
+                            </button>
+
+                            {confirmDeleteNewsId === item.id ? (
+                              <div className={styles.deleteConfirmGroup}>
+                                <button
+                                  type="button"
+                                  className={styles.deleteConfirmBtn}
+                                  onClick={() => {
+                                    setConfirmDeleteNewsId(null);
+                                    handleDeleteNews(item.id, item.headline);
+                                  }}
+                                >
+                                  Confirm
+                                </button>
+                                <button
+                                  type="button"
+                                  className={styles.deleteCancelBtn}
+                                  onClick={() => setConfirmDeleteNewsId(null)}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                className={styles.deleteCardBtn}
+                                onClick={() => setConfirmDeleteNewsId(item.id)}
+                                title="Remove news article"
+                              >
+                                <svg
+                                  width="13"
+                                  height="13"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.2"
+                                >
+                                  <polyline points="3 6 5 6 21 6" />
+                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                                <span>Delete</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -2305,6 +2806,484 @@ export default function PatliputraLoginPage() {
                     type="button"
                     className={styles.btnCancel}
                     onClick={() => setShowEditOngoingModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className={styles.btnSubmit}>
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL: ADD NEWS ARTICLE */}
+        {showAddNewsModal && (
+          <div
+            className={styles.modalBackdrop}
+            onClick={() => setShowAddNewsModal(false)}
+          >
+            <div
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.modalHeader}>
+                <div>
+                  <h3 className={styles.modalTitle}>
+                    Publish News / Media Coverage
+                  </h3>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      marginTop: "4px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        background: "rgba(200, 164, 92, 0.15)",
+                        border: "1px solid rgba(200, 164, 92, 0.35)",
+                        color: "#deb360",
+                        fontWeight: 600,
+                      }}
+                    >
+                      ★ Will Be Placed as Top / Latest Story
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.72rem",
+                        color: "rgba(255,255,255,0.5)",
+                      }}
+                    >
+                      (Instantly appears in the site Footer and on /media)
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className={styles.modalCloseBtn}
+                  onClick={() => setShowAddNewsModal(false)}
+                >
+                  &times;
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateNews} className={styles.modalForm}>
+                <div className={styles.formField}>
+                  <label>Coverage Category *</label>
+                  <select
+                    value={newNews.category}
+                    onChange={(e) => {
+                      const cat = e.target.value as "clipping" | "release";
+                      setNewNews({
+                        ...newNews,
+                        category: cat,
+                        tag:
+                          cat === "clipping"
+                            ? "NEWSPAPER CLIPPING"
+                            : "PRESS RELEASE",
+                        isClipping: cat === "clipping",
+                      });
+                    }}
+                    style={{
+                      background: "rgba(20, 20, 36, 0.9)",
+                      border: "1px solid rgba(200, 164, 92, 0.3)",
+                      color: "#fff",
+                      borderRadius: "8px",
+                      padding: "0.6rem 0.8rem",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    <option value="clipping">
+                      Newspaper Clipping (Print Coverage)
+                    </option>
+                    <option value="release">
+                      Press Release / Corporate Announcement
+                    </option>
+                  </select>
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Media Source / Publication Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. NATIONAL PRESS & DAINIK JAGRAN"
+                    value={newNews.source}
+                    onChange={(e) =>
+                      setNewNews({ ...newNews, source: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Date / Edition Tag *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. RECENT COVERAGE or OCTOBER 2026"
+                    value={newNews.date}
+                    onChange={(e) =>
+                      setNewNews({ ...newNews, date: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Main Headline (Hindi or English) *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. पाटलिपुत्र सिग्नेचर पार्क का भव्य शुभारंभ..."
+                    value={newNews.headline}
+                    onChange={(e) =>
+                      setNewNews({ ...newNews, headline: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>English Subtitle / Translation (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Grand Launch of Patliputra Signature Park in Chi V"
+                    value={newNews.englishTitle}
+                    onChange={(e) =>
+                      setNewNews({ ...newNews, englishTitle: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Select Preset Media Image</label>
+                  <div className={styles.imagePresetPicker}>
+                    {NEWS_PRESET_IMAGES.map((img) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={img.url}
+                        src={img.url}
+                        alt={img.name}
+                        title={img.name}
+                        className={`${styles.presetThumb} ${
+                          newNews.image === img.url
+                            ? styles.presetThumbSelected
+                            : ""
+                        }`}
+                        onClick={() =>
+                          setNewNews({ ...newNews, image: img.url })
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Or Custom Image URL</label>
+                  <input
+                    type="text"
+                    placeholder="/img/news/delivered_news1.webp or https://..."
+                    value={newNews.image}
+                    onChange={(e) =>
+                      setNewNews({ ...newNews, image: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Article Excerpt / Summary *</label>
+                  <textarea
+                    rows={4}
+                    required
+                    placeholder="Key highlights and article summary..."
+                    value={newNews.excerpt}
+                    onChange={(e) =>
+                      setNewNews({ ...newNews, excerpt: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Key Highlights (comma-separated)</label>
+                  <input
+                    type="text"
+                    placeholder="उद्घाटन: सांसद मनोज तिवारी, Chi V ग्रेटर नोएडा, 12% अश्योर्ड रिटर्न"
+                    value={newNews.highlights}
+                    onChange={(e) =>
+                      setNewNews({ ...newNews, highlights: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div
+                  className={styles.formField}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    id="isClippingCheckAdd"
+                    checked={newNews.isClipping}
+                    onChange={(e) =>
+                      setNewNews({ ...newNews, isClipping: e.target.checked })
+                    }
+                    style={{ width: "18px", height: "18px", cursor: "pointer" }}
+                  />
+                  <label
+                    htmlFor="isClippingCheckAdd"
+                    style={{
+                      cursor: "pointer",
+                      margin: 0,
+                      fontSize: "0.85rem",
+                      color: "rgba(255,255,255,0.85)",
+                    }}
+                  >
+                    Enable Full-Resolution Lightbox Zoom on Click (for Newspaper
+                    Clippings)
+                  </label>
+                </div>
+
+                <div className={styles.modalFooter}>
+                  <button
+                    type="button"
+                    className={styles.btnCancel}
+                    onClick={() => setShowAddNewsModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className={styles.btnSubmit}>
+                    Publish News Article
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL: EDIT NEWS ARTICLE */}
+        {showEditNewsModal && editingNews && (
+          <div
+            className={styles.modalBackdrop}
+            onClick={() => setShowEditNewsModal(false)}
+          >
+            <div
+              className={styles.modalContent}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.modalHeader}>
+                <div>
+                  <h3 className={styles.modalTitle}>Edit News Article</h3>
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      color: "rgba(255,255,255,0.5)",
+                      marginTop: "4px",
+                    }}
+                  >
+                    ID: {editingNews.id}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className={styles.modalCloseBtn}
+                  onClick={() => setShowEditNewsModal(false)}
+                >
+                  &times;
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdateNews} className={styles.modalForm}>
+                <div className={styles.formField}>
+                  <label>Coverage Category</label>
+                  <select
+                    value={editingNews.category}
+                    onChange={(e) => {
+                      const cat = e.target.value as "clipping" | "release";
+                      setEditingNews({
+                        ...editingNews,
+                        category: cat,
+                        isClipping: cat === "clipping",
+                      });
+                    }}
+                    style={{
+                      background: "rgba(20, 20, 36, 0.9)",
+                      border: "1px solid rgba(200, 164, 92, 0.3)",
+                      color: "#fff",
+                      borderRadius: "8px",
+                      padding: "0.6rem 0.8rem",
+                      fontSize: "0.9rem",
+                    }}
+                  >
+                    <option value="clipping">
+                      Newspaper Clipping (Print Coverage)
+                    </option>
+                    <option value="release">
+                      Press Release / Corporate Announcement
+                    </option>
+                  </select>
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Media Source / Publication Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingNews.source}
+                    onChange={(e) =>
+                      setEditingNews({ ...editingNews, source: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Date / Edition Tag *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingNews.date}
+                    onChange={(e) =>
+                      setEditingNews({ ...editingNews, date: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Main Headline *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingNews.headline}
+                    onChange={(e) =>
+                      setEditingNews({
+                        ...editingNews,
+                        headline: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>English Subtitle / Translation (Optional)</label>
+                  <input
+                    type="text"
+                    value={editingNews.englishTitle || ""}
+                    onChange={(e) =>
+                      setEditingNews({
+                        ...editingNews,
+                        englishTitle: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Select Preset Media Image</label>
+                  <div className={styles.imagePresetPicker}>
+                    {NEWS_PRESET_IMAGES.map((img) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={img.url}
+                        src={img.url}
+                        alt={img.name}
+                        title={img.name}
+                        className={`${styles.presetThumb} ${
+                          editingNews.image === img.url
+                            ? styles.presetThumbSelected
+                            : ""
+                        }`}
+                        onClick={() =>
+                          setEditingNews({ ...editingNews, image: img.url })
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Image URL</label>
+                  <input
+                    type="text"
+                    value={editingNews.image}
+                    onChange={(e) =>
+                      setEditingNews({ ...editingNews, image: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Article Excerpt / Summary *</label>
+                  <textarea
+                    rows={4}
+                    required
+                    value={editingNews.excerpt}
+                    onChange={(e) =>
+                      setEditingNews({
+                        ...editingNews,
+                        excerpt: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label>Key Highlights (comma-separated)</label>
+                  <input
+                    type="text"
+                    value={editingNewsHighlightsStr}
+                    onChange={(e) =>
+                      setEditingNewsHighlightsStr(e.target.value)
+                    }
+                  />
+                </div>
+
+                <div
+                  className={styles.formField}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    id="isClippingCheckEdit"
+                    checked={editingNews.isClipping || false}
+                    onChange={(e) =>
+                      setEditingNews({
+                        ...editingNews,
+                        isClipping: e.target.checked,
+                      })
+                    }
+                    style={{ width: "18px", height: "18px", cursor: "pointer" }}
+                  />
+                  <label
+                    htmlFor="isClippingCheckEdit"
+                    style={{
+                      cursor: "pointer",
+                      margin: 0,
+                      fontSize: "0.85rem",
+                      color: "rgba(255,255,255,0.85)",
+                    }}
+                  >
+                    Enable Full-Resolution Lightbox Zoom on Click (for Newspaper
+                    Clippings)
+                  </label>
+                </div>
+
+                <div className={styles.modalFooter}>
+                  <button
+                    type="button"
+                    className={styles.btnCancel}
+                    onClick={() => setShowEditNewsModal(false)}
                   >
                     Cancel
                   </button>

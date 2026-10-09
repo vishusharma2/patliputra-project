@@ -1,13 +1,13 @@
 .footer {
   background: var(--color-dark);
   color: var(--color-white);
-  padding: var(--space-20) 0 var(--space-6);
+  padding: var(--space-10) 0 var(--space-6);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 0.8fr 1.2fr;
+  grid-template-columns: 1.4fr 1.1fr 1.2fr;
   gap: var(--space-12);
   margin-bottom: var(--space-16);
 }
@@ -99,7 +99,7 @@
 }
 
 .colTitle::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -117,7 +117,12 @@
 .postItem {
   display: flex;
   gap: var(--space-4);
-  align-items: center;
+  align-items: flex-start;
+}
+
+.postThumbLink {
+  display: block;
+  flex-shrink: 0;
 }
 
 .postThumb {
@@ -127,6 +132,14 @@
   object-fit: cover;
   flex-shrink: 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  transition:
+    transform var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.postThumbLink:hover .postThumb {
+  transform: scale(1.05);
+  border-color: var(--color-primary);
 }
 
 .postContent {
@@ -163,7 +176,9 @@
 .linksList li a {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
-  transition: color var(--transition-fast), padding-left var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    padding-left var(--transition-fast);
   display: inline-block;
 }
 
@@ -214,7 +229,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: var(--space-6);
+  padding-top: var(--space--1);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   flex-wrap: wrap;
   gap: var(--space-4);
