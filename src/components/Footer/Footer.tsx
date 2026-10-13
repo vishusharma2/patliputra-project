@@ -77,7 +77,12 @@ export default function Footer() {
             </p>
 
             <div className={styles.socialLinks}>
-              <a href="#" aria-label="Facebook" className={styles.socialIcon}>
+              <a
+                href="https://www.facebook.com/p/Patliputra-Builders-Limited-100063808999653/"
+                target="_blank"
+                aria-label="Facebook"
+                className={styles.socialIcon}
+              >
                 <svg
                   width="18"
                   height="18"
@@ -101,7 +106,7 @@ export default function Footer() {
                   <circle cx="17.5" cy="6.5" r="1.5" />
                 </svg>
               </a>
-              <a href="#" aria-label="LinkedIn" className={styles.socialIcon}>
+              <a href="https://www.linkedin.com/company/patliputra-builders-limited/about/" aria-label="LinkedIn" className={styles.socialIcon}>
                 <svg
                   width="18"
                   height="18"
