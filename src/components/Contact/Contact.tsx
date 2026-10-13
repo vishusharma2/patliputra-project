@@ -2,6 +2,19 @@
 
 import { useState, FormEvent } from "react";
 import styles from "./Contact.module.css";
+import MapPinIcon from "@/components/icons/MapPinIcon";
+import PhoneIcon from "@/components/icons/PhoneIcon";
+import MailIcon from "@/components/icons/MailIcon";
+import FacebookIcon from "@/components/icons/FacebookIcon";
+import InstagramIcon from "@/components/icons/InstagramIcon";
+import TwitterIcon from "@/components/icons/TwitterIcon";
+import YouTubeIcon from "@/components/icons/YouTubeIcon";
+import LinkedInIcon from "@/components/icons/LinkedInIcon";
+import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
+import CheckIcon from "@/components/icons/CheckIcon";
+import SendIcon from "@/components/icons/SendIcon";
+import NavigationIcon from "@/components/icons/NavigationIcon";
+import ExternalLinkIcon from "@/components/icons/ExternalLinkIcon";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -12,12 +25,63 @@ export default function Contact() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
+  const [mapType, setMapType] = useState<"roadmap" | "satellite">("roadmap");
+  const [copiedAddress, setCopiedAddress] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleCopyAddress = () => {
+    navigator.clipboard.writeText(
+      "301, Maharaja Kameshwar Complex, Fraser Road Area, Patna, Bihar 800001"
+    );
+    setCopiedAddress(true);
+    setTimeout(() => setCopiedAddress(false), 2500);
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    // In production, this would send to an API
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
+    setIsSubmitting(true);
+    const dataToSend = { ...formData };
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSend),
+      });
+      const data = await res.json();
+      const waUrl =
+        data?.whatsappUrl ||
+        `https://api.whatsapp.com/send?phone=917303665845&text=${encodeURIComponent(
+          `Hi Patliputra Group, I submitted an inquiry from the website.\nName: ${dataToSend.name}\nPhone: ${dataToSend.phone}\nRequirement: ${dataToSend.propertyType || "General"}`,
+        )}`;
+
+      // Clear all form fields only after submission finishes
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        propertyType: "",
+        message: "",
+      });
+
+      setWhatsappUrl(waUrl);
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Error submitting contact inquiry:", err);
+      // Clear form after submission even if error
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        propertyType: "",
+        message: "",
+      });
+      setSubmitted(true);
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => setSubmitted(false), 12000);
+    }
   };
 
   return (
@@ -38,59 +102,73 @@ export default function Contact() {
             <div className={styles.contactItems}>
               <div className={styles.contactItem}>
                 <div className={styles.contactIcon}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                  </svg>
+                  <MapPinIcon size={22} />
                 </div>
                 <div>
-                  <strong>Visit Our Office</strong>
-                  <p>Patliputra Colony, Near Bailey Road,<br />Patna, Bihar 800013</p>
+                  <strong>Headquarters & Registered Office</strong>
+                  <p>
+                    301, Maharaja Kameshwar Complex,
+                    <br />
+                    Fraser Road Area, Patna, Bihar 800001
+                  </p>
                 </div>
               </div>
 
               <div className={styles.contactItem}>
                 <div className={styles.contactIcon}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                  </svg>
+                  <PhoneIcon size={22} />
                 </div>
                 <div>
                   <strong>Call Us</strong>
-                  <p><a href="tel:+919876543210">+91 98765 43210</a></p>
-                  <p><a href="tel:+919876543211">+91 98765 43211</a></p>
+                  <p>
+                    <a href="tel:+919876543210">+91 98765 43210</a>
+                  </p>
+                  <p>
+                    <a href="tel:+919876543211">+91 98765 43211</a>
+                  </p>
                 </div>
               </div>
 
               <div className={styles.contactItem}>
                 <div className={styles.contactIcon}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    <polyline points="22,6 12,13 2,6"/>
-                  </svg>
+                  <MailIcon size={22} />
                 </div>
                 <div>
                   <strong>Email Us</strong>
-                  <p><a href="mailto:info@patliputraresidences.com">info@patliputraresidences.com</a></p>
+                  <p>
+                    <a href="mailto:info@patliputraresidences.com">
+                      info@patliputraresidences.com
+                    </a>
+                  </p>
                 </div>
               </div>
             </div>
 
             <div className={styles.social}>
-              <a href="#" aria-label="Facebook" className={styles.socialLink}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              <a
+                href="https://www.facebook.com/p/Patliputra-Builders-Limited-100063808999653/"
+                aria-label="Facebook"
+                target="_blank"
+                className={styles.socialLink}
+              >
+                <FacebookIcon size={20} />
               </a>
               <a href="#" aria-label="Instagram" className={styles.socialLink}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
+                <InstagramIcon size={20} />
               </a>
               <a href="#" aria-label="Twitter" className={styles.socialLink}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+                <TwitterIcon size={20} />
               </a>
               <a href="#" aria-label="YouTube" className={styles.socialLink}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+                <YouTubeIcon size={20} />
               </a>
-              <a href="#" aria-label="LinkedIn" className={styles.socialLink}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+              <a
+                href="https://www.linkedin.com/company/patliputra-builders-limited/about/"
+                aria-label="LinkedIn"
+                target="_blank"
+                className={styles.socialLink}
+              >
+                <LinkedInIcon size={20} />
               </a>
             </div>
           </div>
@@ -104,7 +182,8 @@ export default function Contact() {
             >
               <h3 className={styles.formTitle}>Request a Callback</h3>
               <p className={styles.formSubtitle}>
-                Fill in your details and our team will reach out within 24 hours.
+                Fill in your details and our team will reach out within 24
+                hours.
               </p>
 
               <div className={styles.formGroup}>
@@ -114,7 +193,9 @@ export default function Contact() {
                   placeholder="Your Full Name"
                   required
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className={styles.input}
                 />
               </div>
@@ -127,7 +208,9 @@ export default function Contact() {
                     placeholder="Email Address"
                     required
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                     className={styles.input}
                   />
                 </div>
@@ -138,7 +221,9 @@ export default function Contact() {
                     placeholder="Phone Number"
                     required
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
                     className={styles.input}
                   />
                 </div>
@@ -174,29 +259,238 @@ export default function Contact() {
                 />
               </div>
 
+              {submitted && (
+                <div
+                  style={{
+                    background: "rgba(37, 211, 102, 0.1)",
+                    border: "1px solid rgba(37, 211, 102, 0.3)",
+                    borderRadius: "8px",
+                    padding: "14px 18px",
+                    marginBottom: "16px",
+                  }}
+                >
+                  <p
+                    style={{
+                      margin: "0 0 10px 0",
+                      color: "#1b8744",
+                      fontWeight: 600,
+                      fontSize: "0.92rem",
+                    }}
+                  >
+                    ✓ Thank you! Details have been forwarded to our team via
+                    email.
+                  </p>
+                  {whatsappUrl && (
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "8px",
+                        background: "#25D366",
+                        color: "#ffffff",
+                        padding: "10px 16px",
+                        borderRadius: "6px",
+                        fontWeight: 600,
+                        fontSize: "0.9rem",
+                        textDecoration: "none",
+                        width: "100%",
+                      }}
+                    >
+                      <WhatsAppIcon size={18} />
+                      Connect directly on WhatsApp
+                    </a>
+                  )}
+                </div>
+              )}
+
+              {isSubmitting && (
+                <div className="form-loading-bar-track">
+                  <div className="form-loading-bar-fill" />
+                </div>
+              )}
+
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className={`btn btn--primary btn--lg ${styles.submitBtn}`}
                 id="contact-submit"
+                style={
+                  isSubmitting
+                    ? { opacity: 0.8, cursor: "not-allowed" }
+                    : undefined
+                }
               >
-                {submitted ? (
+                {isSubmitting ? (
+                  "Sending Enquiry..."
+                ) : submitted ? (
                   <>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    Thank You!
+                    <CheckIcon size={20} />
+                    Sent Successfully!
                   </>
                 ) : (
                   <>
                     Send Enquiry
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    <SendIcon size={20} />
                   </>
                 )}
               </button>
 
               <p className={styles.formDisclaimer}>
-                By submitting, you agree to our privacy policy and consent to being
-                contacted regarding your inquiry.
+                By submitting, you agree to our privacy policy and consent to
+                being contacted regarding your inquiry.
               </p>
             </form>
+          </div>
+        </div>
+
+        {/* ================= OUR LOCATION & GOOGLE MAP SECTION ================= */}
+        <div className={styles.locationSection}>
+          <div className={styles.locationHeader}>
+            <span className={styles.locationBadge}>Headquarters & Directions</span>
+            <h2 className={styles.locationTitle}>
+              Our <em>Location</em>
+            </h2>
+            <p className={styles.locationSubtitle}>
+              Visit our registered headquarters on Fraser Road in the central business district of Patna,
+              within walking distance of Patna Junction railway station, Mahavir Mandir, and Exhibition Road.
+            </p>
+          </div>
+
+          <div className={styles.mapWrapper}>
+            {/* Map Mode Switcher (Roadmap vs Satellite) */}
+            <div className={styles.mapModeSwitcher} role="group" aria-label="Map View Mode">
+              <button
+                type="button"
+                className={`${styles.mapModeBtn} ${
+                  mapType === "roadmap" ? styles.mapModeBtnActive : ""
+                }`}
+                onClick={() => setMapType("roadmap")}
+              >
+                🗺️ Map View
+              </button>
+              <button
+                type="button"
+                className={`${styles.mapModeBtn} ${
+                  mapType === "satellite" ? styles.mapModeBtnActive : ""
+                }`}
+                onClick={() => setMapType("satellite")}
+              >
+                🛰️ Satellite View
+              </button>
+            </div>
+
+            {/* Floating Location Card matching the reference design */}
+            <div className={styles.mapCardOverlay}>
+              <span className={styles.mapCardBadge}>Corporate Headquarters</span>
+              <h3 className={styles.mapCardName}>PATLIPUTRA BUILDERS LTD.</h3>
+              <p className={styles.mapCardAddress}>
+                301, Maharaja Kameshwar Complex,
+                <br />
+                Fraser Road Area, Patna, Bihar 800001
+              </p>
+
+              <div className={styles.mapCardRating}>
+                <span className={styles.ratingNumber}>3.5</span>
+                <div className={styles.stars} aria-label="Rating: 3.5 out of 5 stars">
+                  <span>★</span>
+                  <span>★</span>
+                  <span>★</span>
+                  <span>★</span>
+                  <span style={{ opacity: 0.35 }}>★</span>
+                </div>
+                <span className={styles.reviewsCount}>(16 Google Reviews)</span>
+              </div>
+
+              <div className={styles.mapCardActions}>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Patliputra+Builders+Ltd,+301,+Maharaja+Kameshwar+Complex,+Fraser+Road+Area,+Patna,+Bihar+800001"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.openInMapsBtn}
+                >
+                  <ExternalLinkIcon size={16} />
+                  Open in Maps
+                </a>
+                <a
+                  href="https://www.google.com/maps/dir/?api=1&destination=Patliputra+Builders+Ltd,+301,+Maharaja+Kameshwar+Complex,+Fraser+Road+Area,+Patna,+Bihar+800001"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.directionsBtn}
+                  title="Get Directions"
+                  aria-label="Get Directions"
+                >
+                  <NavigationIcon size={18} />
+                </a>
+              </div>
+
+              <button
+                type="button"
+                className={styles.copyAddressBtn}
+                onClick={handleCopyAddress}
+              >
+                {copiedAddress ? (
+                  <>
+                    <CheckIcon size={14} />
+                    Address Copied to Clipboard!
+                  </>
+                ) : (
+                  <>📋 Copy Full Address</>
+                )}
+              </button>
+            </div>
+
+            {/* Embedded Google Maps */}
+            <iframe
+              title="Patliputra Builders Ltd Location Map"
+              src={
+                mapType === "roadmap"
+                  ? "https://maps.google.com/maps?q=25.6055,85.1373&hl=en&z=16&output=embed"
+                  : "https://maps.google.com/maps?q=25.6055,85.1373&hl=en&t=k&z=17&output=embed"
+              }
+              className={styles.mapIframe}
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+
+          {/* Strategic Landmarks & Connectivity Highlights */}
+          <div className={styles.landmarksGrid}>
+            <div className={styles.landmarkCard}>
+              <div className={styles.landmarkIcon}>🚆</div>
+              <div className={styles.landmarkInfo}>
+                <strong>Patna Junction Railway Station</strong>
+                <span>500 m • 3 mins walk</span>
+              </div>
+            </div>
+
+            <div className={styles.landmarkCard}>
+              <div className={styles.landmarkIcon}>🛕</div>
+              <div className={styles.landmarkInfo}>
+                <strong>Mahavir Mandir & ISKCON Temple</strong>
+                <span>600 m • 4 mins walk</span>
+              </div>
+            </div>
+
+            <div className={styles.landmarkCard}>
+              <div className={styles.landmarkIcon}>🏛️</div>
+              <div className={styles.landmarkInfo}>
+                <strong>Dak Bungalow Commercial Hub</strong>
+                <span>400 m • 2 mins drive</span>
+              </div>
+            </div>
+
+            <div className={styles.landmarkCard}>
+              <div className={styles.landmarkIcon}>✈️</div>
+              <div className={styles.landmarkInfo}>
+                <strong>Jay Prakash Narayan Airport</strong>
+                <span>5.8 km • 15 mins drive</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -7,14 +7,34 @@ export default function Newsletter() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    setSubscribed(true);
-    setTimeout(() => {
-      setSubscribed(false);
+
+    const emailToSend = email;
+    setIsSubmitting(true);
+
+    try {
+      await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailToSend }),
+      });
+      // Clear email field only after submission finishes
       setEmail("");
-    }, 4000);
+      setSubscribed(true);
+    } catch (err) {
+      console.error("Error subscribing to newsletter:", err);
+      setEmail("");
+      setSubscribed(true);
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => {
+        setSubscribed(false);
+      }, 5000);
+    }
   };
 
   return (
@@ -42,15 +62,26 @@ export default function Newsletter() {
                 type="email"
                 placeholder="Enter your email address"
                 required
+                disabled={isSubmitting}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={styles.input}
                 aria-label="Email Address for Newsletter"
               />
-              <button type="submit" className={styles.button}>
-                {subscribed ? "Subscribed!" : "Subscribe"}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={styles.button}
+                style={isSubmitting ? { opacity: 0.8, cursor: "not-allowed" } : undefined}
+              >
+                {isSubmitting ? "Subscribing..." : subscribed ? "Subscribed!" : "Subscribe"}
               </button>
             </div>
+            {isSubmitting && (
+              <div className="form-loading-bar-track" style={{ marginTop: "8px", marginBottom: "0" }}>
+                <div className="form-loading-bar-fill" />
+              </div>
+            )}
           </form>
         </div>
       </div>

@@ -1,0 +1,14 @@
+export { default as YouTubeIcon } from "./YouTubeIcon";
+export { default as FacebookIcon } from "./FacebookIcon";
+export { default as InstagramIcon } from "./InstagramIcon";
+export { default as LinkedInIcon } from "./LinkedInIcon";
+export { default as TwitterIcon } from "./TwitterIcon";
+export { default as MapPinIcon } from "./MapPinIcon";
+export { default as PhoneIcon } from "./PhoneIcon";
+export { default as MailIcon } from "./MailIcon";
+export { default as WhatsAppIcon } from "./WhatsAppIcon";
+export { default as CheckIcon } from "./CheckIcon";
+export { default as SendIcon } from "./SendIcon";
+export { default as NavigationIcon } from "./NavigationIcon";
+export { default as ExternalLinkIcon } from "./ExternalLinkIcon";
+export type { IconProps } from "./YouTubeIcon";
