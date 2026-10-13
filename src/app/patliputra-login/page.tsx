@@ -4,10 +4,39 @@ import { useState, useEffect, FormEvent, KeyboardEvent } from "react";
 import Link from "next/link";
 import styles from "./AdminLogin.module.css";
 import ImageUpload from "@/components/ImageUpload/ImageUpload";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
-// Admin default credentials for demonstration & testing
-const DEMO_ADMIN_ID = "admin@patliputragroup.com";
-const DEMO_ADMIN_PASS = "Patliputra@Admin2026";
+// 1-Hour Session Security Limits (Loaded from .env with secure fallback)
+const ADMIN_SESSION_KEY =
+  process.env.NEXT_PUBLIC_ADMIN_SESSION_KEY ||
+  process.env.PRIVATE_ADMIN_SESSION_KEY ||
+  "patliputra_admin_session";
+const ADMIN_SESSION_TIMESTAMP_KEY =
+  process.env.NEXT_PUBLIC_ADMIN_SESSION_TIMESTAMP_KEY ||
+  process.env.ADMIN_SESSION_TIMESTAMP_KEY ||
+  "patliputra_admin_session_time";
+const ONE_HOUR_MS = 60 * 60 * 1000; // 1 hour maximum session lifetime
+
+const isSessionExpired = (): boolean => {
+  try {
+    const storedTime = localStorage.getItem(ADMIN_SESSION_TIMESTAMP_KEY);
+    if (!storedTime) return false;
+    const loginTime = parseInt(storedTime, 10);
+    if (isNaN(loginTime) || loginTime <= 0) return false;
+    return Date.now() - loginTime >= ONE_HOUR_MS;
+  } catch {
+    return false;
+  }
+};
+
+const clearAdminSession = () => {
+  try {
+    localStorage.removeItem(ADMIN_SESSION_KEY);
+    localStorage.removeItem(ADMIN_SESSION_TIMESTAMP_KEY);
+  } catch {
+    // ignore
+  }
+};
 
 interface DeliveredProject {
   id?: string;
@@ -156,8 +185,18 @@ const formatReadableDate = (dateVal: string): string => {
     const monthIndex = parseInt(parts[1], 10) - 1;
     const day = parts[2].padStart(2, "0");
     const months = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
     if (months[monthIndex]) {
       return `${day}-${months[monthIndex]} ${year}`;
@@ -297,11 +336,18 @@ export default function PatliputraLoginPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isShaking, setIsShaking] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
   const [showForgotModal, setShowForgotModal] = useState(false);
 
   // Project Management State
   const [activeTab, setActiveTab] = useState<
-    "delivered" | "ongoing" | "diversified" | "landmarks" | "blogs" | "overview" | "news"
+    | "delivered"
+    | "ongoing"
+    | "diversified"
+    | "landmarks"
+    | "blogs"
+    | "overview"
+    | "news"
   >("delivered");
   const [deliveredProjects, setDeliveredProjects] = useState<
     DeliveredProject[]
@@ -351,7 +397,7 @@ export default function PatliputraLoginPage() {
   // Add Landmark Form State
   const [newLandmark, setNewLandmark] = useState({
     title: "",
-    badge: "5 Star Hotel",
+    badge: "",
     image: "",
   });
 
@@ -361,7 +407,9 @@ export default function PatliputraLoginPage() {
   const [editingBlogOffersStr, setEditingBlogOffersStr] = useState("");
   const [editingBlogHighlightsStr, setEditingBlogHighlightsStr] = useState("");
   const [editingBlogWhyInvestStr, setEditingBlogWhyInvestStr] = useState("");
-  const [confirmDeleteBlogId, setConfirmDeleteBlogId] = useState<string | null>(null);
+  const [confirmDeleteBlogId, setConfirmDeleteBlogId] = useState<string | null>(
+    null,
+  );
 
   // Add Blog Form State (Every field empty, date set to present date)
   const [newBlog, setNewBlog] = useState(createEmptyBlogState());
@@ -369,37 +417,34 @@ export default function PatliputraLoginPage() {
   // Add Diversified Form State
   const [newDiversified, setNewDiversified] = useState({
     title: "",
-    category: "HOTEL",
-    categoryLabel: "4-Star Luxury Business Hotel",
-    categoryFilter: "hospitality",
-    location: "Exhibition Road, Patna",
-    tagline: "Premier 4-Star Hospitality & Grand Banqueting Landmark",
+    category: "",
+    categoryLabel: "",
+    categoryFilter: "",
+    location: "",
+    tagline: "",
     image: "",
     description: "",
-    features:
-      "4-Star Executive Rooms, Multi-Cuisine Fine Dine, Grand Banquets, 24/7 Corporate Business Hub",
-    stat1Label: "Rating",
-    stat1Value: "4-Star",
-    stat2Label: "Accommodations",
-    stat2Value: "70+ Rooms",
-    address: "Exhibition Road, Near Gandhi Maidan, Patna, Bihar 800001",
-    contactInfo: "+91 98765 43210",
-    highlights:
-      "Prime location with seamless transit, Signature Bawarchi restaurant, Dedicated concierge & valet parking",
+    features: "",
+    stat1Label: "",
+    stat1Value: "",
+    stat2Label: "",
+    stat2Value: "",
+    address: "",
+    contactInfo: "",
+    highlights: "",
   });
 
   // Add News Form State
   const [newNews, setNewNews] = useState({
     category: "clipping" as "clipping" | "release",
-    source: "NATIONAL PRESS & DAINIK JAGRAN",
-    date: "RECENT COVERAGE",
+    source: "",
+    date: "",
     headline: "",
     englishTitle: "",
     excerpt: "",
     image: "",
-    tag: "NEWSPAPER CLIPPING",
-    highlights:
-      "उद्घाटन: सांसद मनोज तिवारी, Chi V ग्रेटर नोएडा, 12% अश्योर्ड रिटर्न",
+    tag: "",
+    highlights: "",
     isClipping: true,
   });
 
@@ -408,7 +453,7 @@ export default function PatliputraLoginPage() {
   // Add Delivered Form State
   const [newDelivered, setNewDelivered] = useState({
     name: "",
-    location: "Patna",
+    location: "",
     image: "",
     description: "",
   });
@@ -432,20 +477,19 @@ export default function PatliputraLoginPage() {
     features: string;
   }>({
     title: "",
-    type: "1BHK, 2BHK, Retails, Office Spaces & Luxury Studio Apartments",
-    location: "Greater Noida",
-    area: "10 Acres",
-    price: "Starts @ 40 Lakh*",
+    type: "",
+    location: "",
+    area: "",
+    price: "",
     bedrooms: "",
     bathrooms: "",
-    image: ONGOING_PRESET_IMAGES[0].url,
-    tag: "Under Construction",
-    sqft: "An integrated luxury hub spread over 10 acres sqft",
+    image: "",
+    tag: "",
+    sqft: "",
     about: "",
     address: "",
     amenities: "",
-    features:
-      "Have 1BHK, 2BHK, Retails, Office Spaces and Luxury Studio Apartments., * East-Facing Flats, An integrated luxury hub spread over 10 acres",
+    features: "",
   });
 
   // Edit Project States & Modals
@@ -462,19 +506,128 @@ export default function PatliputraLoginPage() {
   const [editingOngoingAmenitiesStr, setEditingOngoingAmenitiesStr] =
     useState("");
 
-  // Check saved session on mount & set document title
+  // Check Supabase Auth session on mount with strict 1-hour expiration enforcement
   useEffect(() => {
     document.title =
       "Executive Security Gateway & Project Management | Patliputra Group";
-    try {
-      const savedSession = localStorage.getItem("patliputra_admin_session");
-      if (savedSession === "active") {
-        setIsAuthenticated(true);
+
+    // 1. Immediately verify 1-hour expiration if an active session exists
+    if (isSessionExpired()) {
+      clearAdminSession();
+      setIsAuthenticated(false);
+      setCurrentUserEmail(null);
+      if (supabase) {
+        supabase.auth.signOut().catch(() => {});
       }
-    } catch {
-      // ignore
+      return;
+    }
+
+    if (supabase) {
+      // 2. Check existing session
+      supabase.auth.getSession().then(({ data: { session }, error }) => {
+        if (!error && session?.user && !isSessionExpired()) {
+          setIsAuthenticated(true);
+          setCurrentUserEmail(session.user.email || null);
+          try {
+            localStorage.setItem(ADMIN_SESSION_KEY, "active");
+            if (!localStorage.getItem(ADMIN_SESSION_TIMESTAMP_KEY)) {
+              localStorage.setItem(
+                ADMIN_SESSION_TIMESTAMP_KEY,
+                String(Date.now()),
+              );
+            }
+          } catch {
+            // ignore
+          }
+        } else if (isSessionExpired()) {
+          clearAdminSession();
+          setIsAuthenticated(false);
+          setCurrentUserEmail(null);
+          supabase?.auth.signOut().catch(() => {});
+        }
+      });
+
+      // 3. Listen to realtime auth events
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === "SIGNED_IN" && session?.user) {
+          try {
+            localStorage.setItem(ADMIN_SESSION_KEY, "active");
+            localStorage.setItem(
+              ADMIN_SESSION_TIMESTAMP_KEY,
+              String(Date.now()),
+            );
+          } catch {
+            // ignore
+          }
+          setIsAuthenticated(true);
+          setCurrentUserEmail(session.user.email || null);
+        } else if (session?.user && !isSessionExpired()) {
+          setIsAuthenticated(true);
+          setCurrentUserEmail(session.user.email || null);
+        } else if (event === "SIGNED_OUT") {
+          clearAdminSession();
+          setIsAuthenticated(false);
+          setCurrentUserEmail(null);
+        }
+      });
+
+      return () => {
+        subscription.unsubscribe();
+      };
     }
   }, []);
+
+  // Active 1-Hour Session Expiration Monitor while on dashboard
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const handleSessionTimeout = async () => {
+      if (supabase) {
+        try {
+          await supabase.auth.signOut();
+        } catch {}
+      }
+      clearAdminSession();
+      setIsAuthenticated(false);
+      setPassword("");
+      setCurrentUserEmail(null);
+      setErrorMessage(
+        "Admin session expired after 1 hour of activity for security. Please authenticate again.",
+      );
+      setToastMessage("Session expired after 1 hour.");
+      triggerShake();
+    };
+
+    let remainingMs = ONE_HOUR_MS;
+    try {
+      const storedTime = localStorage.getItem(ADMIN_SESSION_TIMESTAMP_KEY);
+      if (storedTime) {
+        const loginTime = parseInt(storedTime, 10);
+        if (!isNaN(loginTime) && loginTime > 0) {
+          const elapsed = Date.now() - loginTime;
+          remainingMs = Math.max(0, ONE_HOUR_MS - elapsed);
+        }
+      } else {
+        localStorage.setItem(ADMIN_SESSION_TIMESTAMP_KEY, String(Date.now()));
+      }
+    } catch {}
+
+    if (remainingMs <= 0) {
+      handleSessionTimeout();
+      return;
+    }
+
+    // Schedule logout precisely at the 1-hour expiration mark
+    const timer = setTimeout(() => {
+      handleSessionTimeout();
+    }, remainingMs);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isAuthenticated]);
 
   // Fetch latest projects and news data whenever authenticated
   useEffect(() => {
@@ -553,17 +706,12 @@ export default function PatliputraLoginPage() {
     }
   };
 
-  const handleQuickFill = () => {
-    setAdminId(DEMO_ADMIN_ID);
-    setPassword(DEMO_ADMIN_PASS);
-    setErrorMessage("");
-  };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setErrorMessage("");
 
-    if (!adminId.trim()) {
+    const trimmedId = adminId.trim();
+    if (!trimmedId) {
       setErrorMessage("Corporate identifier or email is required.");
       triggerShake();
       return;
@@ -575,37 +723,98 @@ export default function PatliputraLoginPage() {
       return;
     }
 
+    if (!supabase || !isSupabaseConfigured) {
+      setErrorMessage(
+        "Authentication service is currently unavailable. Supabase configuration missing.",
+      );
+      triggerShake();
+      return;
+    }
+
     setIsLoading(true);
 
-    // Simulate enterprise auth handshake
-    setTimeout(() => {
-      setIsLoading(false);
+    // Resolve email identifier (supports direct email or short username like 'admin')
+    const candidateEmails = trimmedId.includes("@")
+      ? [trimmedId.toLowerCase()]
+      : [
+          `${trimmedId.toLowerCase()}@patliputra.com`,
+          `${trimmedId.toLowerCase()}@patliputragroup.com`,
+        ];
 
-      const isValidUser =
-        adminId.trim().toLowerCase() === DEMO_ADMIN_ID.toLowerCase() ||
-        adminId.trim().toLowerCase() === "admin";
-      const isValidPass =
-        password === DEMO_ADMIN_PASS ||
-        password === "Patliputra@signature_Park" ||
-        password === "admin123";
+    try {
+      let authUserSession = null;
+      let lastErrorMessage = "";
 
-      if (isValidUser && isValidPass) {
-        setIsAuthenticated(true);
-        try {
-          localStorage.setItem("patliputra_admin_session", "active");
-        } catch {
-          // ignore storage errs
+      // Attempt authentication for candidate email variants
+      for (const emailToAuth of candidateEmails) {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: emailToAuth,
+          password: password,
+        });
+
+        if (error) {
+          lastErrorMessage = error.message;
+        } else if (data?.session && data?.user) {
+          authUserSession = { user: data.user, email: emailToAuth };
+          break;
         }
-        setToastMessage(
-          "Security handshake verified. Welcome, Executive Director.",
-        );
-      } else {
+      }
+
+      if (!authUserSession) {
+        clearAdminSession();
+        const isInvalid =
+          lastErrorMessage
+            .toLowerCase()
+            .includes("invalid login credentials") ||
+          lastErrorMessage.toLowerCase().includes("invalid credentials") ||
+          !lastErrorMessage;
+
         setErrorMessage(
-          "Access Denied: Invalid administrator credentials or unverified terminal.",
+          isInvalid
+            ? "Access Denied: Invalid administrator credentials or unverified terminal."
+            : `Authentication Notice: ${lastErrorMessage}`,
         );
         triggerShake();
+        setIsLoading(false);
+        return;
       }
-    }, 900);
+
+      // Enforce 1-hour session timestamp upon successful login
+      const now = Date.now();
+      try {
+        localStorage.setItem(ADMIN_SESSION_KEY, "active");
+        localStorage.setItem(ADMIN_SESSION_TIMESTAMP_KEY, String(now));
+      } catch {
+        // ignore
+      }
+
+      setIsAuthenticated(true);
+      setCurrentUserEmail(authUserSession.user.email || authUserSession.email);
+
+      // Non-blocking: update last_login in public.admin_users table
+      try {
+        await supabase
+          .from("admin_users")
+          .update({ last_login: new Date().toISOString() })
+          .eq("email", authUserSession.user.email);
+      } catch {
+        // non-critical
+      }
+
+      setToastMessage(
+        "Supabase Auth handshake verified. Session valid for 1 hour.",
+      );
+      setIsLoading(false);
+      return;
+    } catch (err: unknown) {
+      console.warn("Login handshake error:", err);
+      setErrorMessage(
+        err instanceof Error ? err.message : "Authentication service error.",
+      );
+      triggerShake();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const triggerShake = () => {
@@ -613,14 +822,19 @@ export default function PatliputraLoginPage() {
     setTimeout(() => setIsShaking(false), 550);
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    setIsLoading(false);
+    if (supabase) {
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.error("Supabase signOut error:", err);
+      }
+    }
+    clearAdminSession();
     setIsAuthenticated(false);
     setPassword("");
-    try {
-      localStorage.removeItem("patliputra_admin_session");
-    } catch {
-      // ignore
-    }
+    setCurrentUserEmail(null);
     setToastMessage("Administrator session safely terminated.");
   };
 
@@ -1483,9 +1697,7 @@ export default function PatliputraLoginPage() {
       ...b,
       date: toInputDateISO(b.date),
     });
-    setEditingBlogOffersStr(
-      Array.isArray(b.offers) ? b.offers.join("\n") : "",
-    );
+    setEditingBlogOffersStr(Array.isArray(b.offers) ? b.offers.join("\n") : "");
     setEditingBlogHighlightsStr(
       Array.isArray(b.highlights) ? b.highlights.join("\n") : "",
     );
@@ -1557,10 +1769,9 @@ export default function PatliputraLoginPage() {
   // Delete Blog Handler
   const handleDeleteBlog = async (id: string, title?: string) => {
     try {
-      const res = await fetch(
-        `/api/admin/blogs?id=${encodeURIComponent(id)}`,
-        { method: "DELETE" },
-      );
+      const res = await fetch(`/api/admin/blogs?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
 
       const data = await res.json();
       if (res.ok && data.success) {
@@ -1845,22 +2056,6 @@ export default function PatliputraLoginPage() {
               </button>
             </form>
 
-            {/* Quick Demo Helper Box */}
-            <div className={styles.demoHelperBox}>
-              <div className={styles.demoHelperText}>
-                <strong>Authorized Test Profile</strong>
-                <span>admin@patliputragroup.com</span>
-              </div>
-              <button
-                type="button"
-                className={styles.quickFillBtn}
-                onClick={handleQuickFill}
-                title="Populate test credentials"
-              >
-                Quick Fill
-              </button>
-            </div>
-
             <div className={styles.returnLinkWrap}>
               <Link href="/" className={styles.returnLink}>
                 <svg
@@ -1900,7 +2095,10 @@ export default function PatliputraLoginPage() {
                   </h1>
                   <div className={styles.dashHeaderMeta}>
                     <span>
-                      Authenticated: <strong>Director Level</strong>
+                      Authenticated:{" "}
+                      <strong>
+                        {currentUserEmail || "Executive Director"}
+                      </strong>
                     </span>
                     <span>&bull;</span>
                     <span>
@@ -2050,9 +2248,7 @@ export default function PatliputraLoginPage() {
                 onClick={() => setActiveTab("blogs")}
               >
                 <span>Blogs &amp; Offers</span>
-                <span className={styles.tabCountBadge}>
-                  {blogsList.length}
-                </span>
+                <span className={styles.tabCountBadge}>{blogsList.length}</span>
               </button>
 
               <button
@@ -2963,7 +3159,8 @@ export default function PatliputraLoginPage() {
                                   style={{
                                     fontSize: "0.68rem",
                                     background: "rgba(222, 179, 96, 0.12)",
-                                    border: "1px solid rgba(222, 179, 96, 0.25)",
+                                    border:
+                                      "1px solid rgba(222, 179, 96, 0.25)",
                                     color: "#deb360",
                                     padding: "2px 6px",
                                     borderRadius: "3px",
@@ -3126,9 +3323,7 @@ export default function PatliputraLoginPage() {
                     </div>
                   </div>
                   <div className={styles.statItem}>
-                    <div className={styles.statValue}>
-                      {blogsList.length}
-                    </div>
+                    <div className={styles.statValue}>{blogsList.length}</div>
                     <div className={styles.statLabel}>
                       Corporate Blogs &amp; Offers
                     </div>
@@ -3161,6 +3356,7 @@ export default function PatliputraLoginPage() {
                     href="/properties"
                     className={styles.submitBtn}
                     style={{ maxWidth: "260px", textDecoration: "none" }}
+                    target="_blank"
                   >
                     View Properties Portal
                   </Link>
@@ -3515,7 +3711,7 @@ export default function PatliputraLoginPage() {
                 </div>
 
                 <div className={styles.formField}>
-                  <label>Location in Patna *</label>
+                  <label>Location*</label>
                   <input
                     type="text"
                     required
@@ -3928,7 +4124,7 @@ export default function PatliputraLoginPage() {
                 </div>
 
                 <div className={styles.formField}>
-                  <label>Location in Patna *</label>
+                  <label>Location *</label>
                   <input
                     type="text"
                     required
@@ -4441,9 +4637,7 @@ export default function PatliputraLoginPage() {
                   <ImageUpload
                     label="Media Press / Clipping Image"
                     value={newNews.image}
-                    onChange={(url) =>
-                      setNewNews({ ...newNews, image: url })
-                    }
+                    onChange={(url) => setNewNews({ ...newNews, image: url })}
                     folder="News"
                     required
                     hint="Upload from device"
@@ -5638,7 +5832,9 @@ export default function PatliputraLoginPage() {
             >
               <div className={styles.modalHeader}>
                 <div>
-                  <h3 className={styles.modalTitle}>Publish Corporate Blog / Offer</h3>
+                  <h3 className={styles.modalTitle}>
+                    Publish Corporate Blog / Offer
+                  </h3>
                   <div
                     style={{
                       display: "flex",
@@ -5666,7 +5862,8 @@ export default function PatliputraLoginPage() {
                         color: "rgba(255,255,255,0.5)",
                       }}
                     >
-                      (Displayed on public /blogs portal with interactive detail modal)
+                      (Displayed on public /blogs portal with interactive detail
+                      modal)
                     </span>
                   </div>
                 </div>
@@ -5754,7 +5951,9 @@ export default function PatliputraLoginPage() {
                 </div>
 
                 <div className={styles.formField}>
-                  <label>💼 Limited-Time Investment Offers (One bullet per line)</label>
+                  <label>
+                    💼 Limited-Time Investment Offers (One bullet per line)
+                  </label>
                   <textarea
                     rows={3}
                     placeholder="12% Assured Return Till Possession&#10;Offer valid only till 30th June 2025&#10;RERA Approved Project (UPRERAPRJ422327/10/2024)"
@@ -5854,7 +6053,9 @@ export default function PatliputraLoginPage() {
             >
               <div className={styles.modalHeader}>
                 <div>
-                  <h3 className={styles.modalTitle}>Edit Blog Article / Offer</h3>
+                  <h3 className={styles.modalTitle}>
+                    Edit Blog Article / Offer
+                  </h3>
                   <div
                     style={{
                       display: "flex",
@@ -5981,7 +6182,9 @@ export default function PatliputraLoginPage() {
                   <ImageUpload
                     label="Blog Flyer / Poster Image"
                     value={editingBlog.image}
-                    onChange={(url) => setEditingBlog({ ...editingBlog, image: url })}
+                    onChange={(url) =>
+                      setEditingBlog({ ...editingBlog, image: url })
+                    }
                     folder="Blogs"
                     required
                     hint="Upload from device"
@@ -5989,7 +6192,9 @@ export default function PatliputraLoginPage() {
                 </div>
 
                 <div className={styles.formField}>
-                  <label>💼 Limited-Time Investment Offers (One bullet per line)</label>
+                  <label>
+                    💼 Limited-Time Investment Offers (One bullet per line)
+                  </label>
                   <textarea
                     rows={3}
                     value={editingBlogOffersStr}
@@ -6002,7 +6207,9 @@ export default function PatliputraLoginPage() {
                   <textarea
                     rows={3}
                     value={editingBlogHighlightsStr}
-                    onChange={(e) => setEditingBlogHighlightsStr(e.target.value)}
+                    onChange={(e) =>
+                      setEditingBlogHighlightsStr(e.target.value)
+                    }
                   />
                 </div>
 

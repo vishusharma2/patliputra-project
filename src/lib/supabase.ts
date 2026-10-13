@@ -8,10 +8,21 @@ export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
 // Public client for browser / client components
 export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    })
   : null;
 
-// Admin client for server route handlers
+// Admin client for server route handlers (stateless, no browser localStorage persistence)
 export const supabaseAdmin = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    })
   : null;

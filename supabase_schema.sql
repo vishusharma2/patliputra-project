@@ -4,7 +4,9 @@
 -- under: SQL Editor -> New Query -> Run
 -- ============================================================
 
--- 1. ADMIN USERS TABLE
+-- 1. ADMIN USERS TABLE & SUPABASE AUTH
+-- User authentication is securely handled via Supabase Auth (auth.users).
+-- public.admin_users stores profile metadata, roles, and tracks audit login times.
 CREATE TABLE IF NOT EXISTS public.admin_users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,
@@ -13,9 +15,11 @@ CREATE TABLE IF NOT EXISTS public.admin_users (
   last_login TIMESTAMPTZ
 );
 
--- Seed default admin account
+-- Seed admin accounts for Supabase Auth integration
 INSERT INTO public.admin_users (email, role)
-VALUES ('admin@patliputragroup.com', 'superadmin')
+VALUES 
+  ('admin@patliputra.com', 'superadmin'),
+  ('admin@patliputragroup.com', 'superadmin')
 ON CONFLICT (email) DO NOTHING;
 
 

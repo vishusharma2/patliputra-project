@@ -602,51 +602,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* Quick Fill Demo Helper Chip */
-.demoHelperBox {
-  margin-top: 1.65rem;
-  padding: 0.85rem 1rem;
-  background: rgba(200, 164, 92, 0.07);
-  border: 1px dashed rgba(200, 164, 92, 0.3);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
 
-.demoHelperText {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.75);
-  line-height: 1.35;
-}
-
-.demoHelperText strong {
-  color: #deb360;
-  display: block;
-  font-size: 0.78rem;
-  margin-bottom: 2px;
-}
-
-.quickFillBtn {
-  background: rgba(200, 164, 92, 0.18);
-  border: 1px solid rgba(200, 164, 92, 0.45);
-  color: #deb360;
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
-
-.quickFillBtn:hover {
-  background: #deb360;
-  color: #0f0f1a;
-  box-shadow: 0 0 10px rgba(200, 164, 92, 0.5);
-}
 
 /* Bottom Return Link */
 .returnLinkWrap {

@@ -45,9 +45,24 @@ export default function DeliveredProjects() {
   useEffect(() => {
     // Check if admin is currently authenticated
     try {
-      const session = localStorage.getItem("patliputra_admin_session");
-      if (session === "active") {
+      const sessionKey =
+        process.env.NEXT_PUBLIC_ADMIN_SESSION_KEY || "patliputra_admin_session";
+      const sessionTimeKey =
+        process.env.NEXT_PUBLIC_ADMIN_SESSION_TIMESTAMP_KEY ||
+        "patliputra_admin_session_time";
+
+      const session = localStorage.getItem(sessionKey);
+      const sessionTime = localStorage.getItem(sessionTimeKey);
+      const isExpired = sessionTime
+        ? Date.now() - parseInt(sessionTime, 10) >= 60 * 60 * 1000
+        : false;
+
+      if (session === "active" && !isExpired) {
         setIsAdmin(true);
+      } else if (session && isExpired) {
+        localStorage.removeItem(sessionKey);
+        localStorage.removeItem(sessionTimeKey);
+        setIsAdmin(false);
       }
     } catch {
       // ignore

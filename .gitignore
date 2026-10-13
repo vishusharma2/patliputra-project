@@ -45,3 +45,7 @@ Claude.md
 
 #imp_note
 note.txt
+
+# credentials document (NEVER commit)
+PATLIPUTRA_CREDENTIALS.docx
+scripts/generate-credentials-doc.mjs
